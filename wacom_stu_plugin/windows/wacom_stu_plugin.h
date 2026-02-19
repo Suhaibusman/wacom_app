@@ -18,18 +18,44 @@ namespace WacomGSS {
 
 namespace wgssSTU = WacomGSS::STU;
 
-class WacomStuPlugin : public flutter::Plugin {
+#include <flutter/event_channel.h>
+#include <flutter/event_stream_handler_functions.h>
+#include <thread>
+#include <atomic>
+#include <mutex>
+
+class WacomStuPlugin : public flutter::Plugin, public flutter::StreamHandler<flutter::EncodableValue> {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows* registrar);
 
   WacomStuPlugin();
   virtual ~WacomStuPlugin();
 
+  // StreamHandler implementation
+  std::unique_ptr<flutter::StreamHandlerError<flutter::EncodableValue>> OnListenInternal(
+      const flutter::EncodableValue* arguments,
+      std::unique_ptr<flutter::EventSink<flutter::EncodableValue>>&& events) override;
+
+  std::unique_ptr<flutter::StreamHandlerError<flutter::EncodableValue>> OnCancelInternal(
+      const flutter::EncodableValue* arguments) override;
+
  private:
+  void StartReportThread();
+  void StopReportThread();
+  void ClearScreen();
+
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue>& method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 
   std::unique_ptr<WacomGSS::STU::Tablet> tablet;
   std::unique_ptr<WacomGSS::STU::UsbInterface> usbInterface;
+  
+  // Threading
+  std::thread reportThread;
+  std::atomic<bool> keepRunning;
+  
+  // Event Sink
+  std::unique_ptr<flutter::EventSink<flutter::EncodableValue>> eventSink;
+  std::mutex sinkMutex;
 };

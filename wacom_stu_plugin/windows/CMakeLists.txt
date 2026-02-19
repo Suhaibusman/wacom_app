@@ -40,6 +40,7 @@ target_sources(wacom_stu_plugin_plugin PRIVATE
   "${WACOM_SDK_DIR}/src/Win32/cpp/getDevicePowerState.cpp"
   "${WACOM_SDK_DIR}/src/Win32/cpp/com.cpp"
   "${WACOM_SDK_DIR}/src/Win32/cpp/dliHook.cpp"
+  "${WACOM_SDK_DIR}/src/Win32/cpp/msvc.cpp"
   "${WACOM_SDK_DIR}/src/utility/cpp/Win32/setThreadName.cpp"
   "${WACOM_SDK_DIR}/src/utility/cpp/Win32/enumUsbDevices.cpp"
   "${WACOM_SDK_DIR}/src/utility/cpp/Win32/enumDevices.cpp"
