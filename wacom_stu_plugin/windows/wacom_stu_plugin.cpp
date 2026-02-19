@@ -212,6 +212,8 @@ void WacomStuPlugin::HandleMethodCall(
       reply[EncodableValue("status")] = EncodableValue("Connected");
       reply[EncodableValue("maxX")] = EncodableValue((int64_t)cap.tabletMaxX);
       reply[EncodableValue("maxY")] = EncodableValue((int64_t)cap.tabletMaxY);
+      reply[EncodableValue("screenWidth")] = EncodableValue((int64_t)cap.screenWidth);
+      reply[EncodableValue("screenHeight")] = EncodableValue((int64_t)cap.screenHeight);
 
       result->Success(EncodableValue(reply));
     } catch (const std::exception& e) {
@@ -228,12 +230,59 @@ void WacomStuPlugin::HandleMethodCall(
     result->Success(EncodableValue("Disconnected"));
   }
   
+
+
   else if (call.method_name() == "clearScreen") {
     try {
         ClearScreen();
         result->Success(EncodableValue(true));
     } catch (const std::exception& e) {
         result->Error("CLEAR_FAILED", e.what());
+    }
+  }
+
+  else if (call.method_name() == "setSignatureScreen") {
+    try {
+        const auto* map = std::get_if<flutter::EncodableMap>(call.arguments());
+        if (!map) {
+             result->Error("INVALID_ARGUMENTS", "Arguments must be a map");
+             return;
+        }
+
+        auto data_it = map->find(EncodableValue("data"));
+        auto mode_it = map->find(EncodableValue("mode"));
+
+        if (data_it == map->end() || mode_it == map->end()) {
+             result->Error("INVALID_ARGUMENTS", "Missing 'data' or 'mode'");
+             return;
+        }
+
+        std::vector<uint8_t> data;
+        if (std::holds_alternative<std::vector<uint8_t>>(data_it->second)) {
+            data = std::get<std::vector<uint8_t>>(data_it->second);
+        } else {
+             result->Error("INVALID_ARGUMENTS", "'data' must be a byte array");
+             return;
+        }
+
+        int mode = 0;
+        if (std::holds_alternative<int>(mode_it->second)) {
+             mode = std::get<int>(mode_it->second);
+        } else if (std::holds_alternative<int64_t>(mode_it->second)) {
+             mode = (int)std::get<int64_t>(mode_it->second);
+        }
+
+        if (tablet && tablet->isConnected()) {
+             // 0=1bit, 1=1bit_Zlib, 2=16bit, 4=24bit
+             // We cast int to EncodingMode
+             tablet->writeImage((WacomGSS::STU::Protocol::EncodingMode)mode, data.data(), data.size());
+             result->Success(EncodableValue(true));
+        } else {
+             result->Error("NO_DEVICE", "Tablet not connected");
+        }
+        
+    } catch (const std::exception& e) {
+        result->Error("WRITE_IMAGE_FAILED", e.what());
     }
   }
 
