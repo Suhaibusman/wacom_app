@@ -1,0 +1,367 @@
+[ +343 ms] Artifact Instance of 'MaterialFonts' is not required, skipping update.
+[        ] Artifact Instance of 'GradleWrapper' is not required, skipping update.
+[        ] Artifact Instance of 'AndroidGenSnapshotArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'AndroidInternalBuildArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IOSEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterWebSdk' is not required, skipping update.
+[        ] Artifact Instance of 'LegacyCanvasKitRemover' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterSdk' is not required, skipping update.
+[        ] Artifact Instance of 'WindowsEngineArtifacts' is not required, skipping update.
+[   +1 ms] Artifact Instance of 'MacOSEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'LinuxEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'LinuxFuchsiaSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'MacOSFuchsiaSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterRunnerSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterRunnerDebugSymbols' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
+[        ] executing: [E:\suhaib\fluttersdk\flutter/] git -c log.showSignature=false log HEAD -n 1 --pretty=format:%ad --date=iso
+[  +35 ms] Exit code 0 from: git -c log.showSignature=false log HEAD -n 1 --pretty=format:%ad --date=iso
+[        ] 2026-02-10 10:16:12 -0800
+[   +7 ms] Artifact Instance of 'AndroidGenSnapshotArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'AndroidInternalBuildArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IOSEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterWebSdk' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterEngineStamp' is not required, skipping update.
+[        ] Artifact Instance of 'LegacyCanvasKitRemover' is not required, skipping update.
+[   +1 ms] Artifact Instance of 'WindowsEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'MacOSEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'LinuxEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'LinuxFuchsiaSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'MacOSFuchsiaSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterRunnerSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterRunnerDebugSymbols' is not required, skipping update.
+[  +21 ms] Artifact Instance of 'MaterialFonts' is not required, skipping update.
+[        ] Artifact Instance of 'GradleWrapper' is not required, skipping update.
+[        ] Artifact Instance of 'AndroidGenSnapshotArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'AndroidInternalBuildArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IOSEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterWebSdk' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterEngineStamp' is not required, skipping update.
+[        ] Artifact Instance of 'LegacyCanvasKitRemover' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterSdk' is not required, skipping update.
+[        ] Artifact Instance of 'MacOSEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'LinuxEngineArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'LinuxFuchsiaSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'MacOSFuchsiaSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterRunnerSDKArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FlutterRunnerDebugSymbols' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
+[        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
+[   +4 ms] Skipping pub get: version match.
+[  +40 ms] Found plugin wacom_stu_plugin at E:\suhaib\flutterproject\testing-ct\wacom_app\wacom_stu_plugin\
+[  +36 ms] Found plugin wacom_stu_plugin at E:\suhaib\flutterproject\testing-ct\wacom_app\wacom_stu_plugin\
+[   +8 ms] Skipping generating web_plugin_registrant.dart because it is up-to-date.
+[  +27 ms] Found plugin wacom_stu_plugin at E:\suhaib\flutterproject\testing-ct\wacom_app\wacom_stu_plugin\
+[   +2 ms] Generating E:\suhaib\flutterproject\testing-ct\wacom_app\android\app\src\main\java\io\flutter\plugins\GeneratedPluginRegistrant.java
+[   +2 ms] Skipping generating GeneratedPluginRegistrant.java because it is up-to-date.
+[   +3 ms] Skipping generating generated_plugin_registrant.h because it is up-to-date.
+[        ] Skipping generating generated_plugin_registrant.cc because it is up-to-date.
+[   +1 ms] Skipping generating generated_plugins.cmake because it is up-to-date.
+[   +1 ms] Skipping generating generated_plugin_registrant.h because it is up-to-date.
+[        ] Skipping generating generated_plugin_registrant.cc because it is up-to-date.
+[        ] Skipping generating generated_plugins.cmake because it is up-to-date.
+[   +1 ms] Skipping generating GeneratedPluginRegistrant.h because it is up-to-date.
+[        ] Skipping generating GeneratedPluginRegistrant.m because it is up-to-date.
+[        ] Skipping generating GeneratedPluginRegistrant.swift because it is up-to-date.
+[  +19 ms] executing: C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe -format json -products * -utf8 -latest -version 16 -requires Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Component.VC.Tools.x86.x64 Microsoft.VisualStudio.Component.VC.CMake.Project
+[  +34 ms] Exit code 0 from: C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe -format json -products * -utf8 -latest -version 16 -requires Microsoft.VisualStudio.Workload.NativeDesktop Microsoft.VisualStudio.Component.VC.Tools.x86.x64 Microsoft.VisualStudio.Component.VC.CMake.Project
+[        ] [
+             {
+               "instanceId": "2b28055b",
+               "installDate": "2025-06-26T14:02:32Z",
+               "installationName": "VisualStudio/17.14.7+36221.1",
+               "installationPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise",
+               "installationVersion": "17.14.36221.1",
+               "productId": "Microsoft.VisualStudio.Product.Enterprise",
+               "productPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\Common7\\IDE\\devenv.exe",
+               "state": 4294967295,
+               "isComplete": true,
+               "isLaunchable": true,
+               "isPrerelease": false,
+               "isRebootRequired": false,
+               "displayName": "Visual Studio Enterprise 2022",
+               "description": "Scalable, end-to-end solution for teams of any size",
+               "channelId": "VisualStudio.17.Release",
+               "channelUri": "https://aka.ms/vs/17/release/channel",
+               "enginePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\resources\\app\\ServiceHub\\Services\\Microsoft.VisualStudio.Setup.Service",
+               "installChannelUri": "E:\\suhaib\\vs2022\\Visual Studio 2022 Enterprise v17.7.3\\Install\\ChannelManifest.json",
+               "installedChannelId": "VisualStudio.17.Release",
+               "installedChannelUri": "https://aka.ms/vs/17/release/channel",
+               "layoutPath": "E:\\suhaib\\vs2022\\Visual Studio 2022 Enterprise v17.7.3\\Install",
+               "releaseNotes": "https://docs.microsoft.com/en-us/visualstudio/releases/2022/release-notes-v17.14#17.14.7",
+               "resolvedInstallationPath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise",
+               "thirdPartyNotices": "https://go.microsoft.com/fwlink/?LinkId=661288",
+               "updateDate": "2025-07-03T05:21:04.7395406Z",
+               "catalog": {
+                 "buildBranch": "d17.14",
+                 "buildVersion": "17.14.36221.1",
+                 "id": "VisualStudio/17.14.7+36221.1",
+                 "localBuild": "build-lab",
+                 "manifestName": "VisualStudio",
+                 "manifestType": "installer",
+                 "productDisplayVersion": "17.14.7",
+                 "productLine": "Dev17",
+                 "productLineVersion": "2022",
+                 "productMilestone": "RTW",
+                 "productMilestoneIsPreRelease": "False",
+                 "productName": "Visual Studio",
+                 "productPatchVersion": "7",
+                 "productPreReleaseMilestoneSuffix": "1.0",
+                 "productSemanticVersion": "17.14.7+36221.1",
+                 "requiredEngineVersion": "3.14.2075.50697"
+               },
+               "properties": {
+                 "appLocalWPF": "false",
+                 "campaignId": "",
+                 "channelManifestId": "VisualStudio.17.Release/17.14.7+36221.1",
+                 "nickname": "",
+                 "setupEngineFilePath": "C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\setup.exe"
+               }
+             }
+           ]
+[   +2 ms] Building Windows application...
+[   +1 ms] executing: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -S E:\suhaib\flutterproject\testing-ct\wacom_app\windows -B E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64 -G Visual Studio 17 2022 -A x64 -DFLUTTER_TARGET_PLATFORM=windows-x64
+[  +34 ms] -- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+[   +9 ms] -- Configuring done (0.0s)
+[ +547 ms] -- Generating done (0.5s)
+[  +34 ms] -- Build files have been written to: E:/suhaib/flutterproject/testing-ct/wacom_app/build/windows/x64
+[   +7 ms] executing: C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe --build E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64 --config Release --target INSTALL --verbose
+[  +56 ms] Change Dir: 'E:/suhaib/flutterproject/testing-ct/wacom_app/build/windows/x64'
+[        ] Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/MSBuild/Current/Bin/amd64/MSBuild.exe" INSTALL.vcxproj /p:Configuration=Release /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+[  +54 ms] MSBuild version 17.14.14+a129329f1 for .NET Framework
+[  +25 ms] Build started 2/19/2026 12:18:04 PM.
+[ +123 ms] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\INSTALL.vcxproj" on node 1 (default targets).
+[        ] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\INSTALL.vcxproj" (1) is building "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ZERO_CHECK.vcxproj" (2) on node 1 (default targets).
+[        ] PrepareForBuild:
+[        ]   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+[   +1 ms] InitializeBuildStatus:
+[        ]   Creating "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+[        ]   Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+[   +7 ms] CustomBuild:
+[        ]   All outputs are up-to-date.
+[  +19 ms] FinalizeBuildStatus:
+[        ]   Deleting file "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\unsuccessfulbuild".
+[        ]   Touching "x64\Release\ZERO_CHECK\ZERO_CHECK.tlog\ZERO_CHECK.lastbuildstate".
+[        ] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ZERO_CHECK.vcxproj" (default targets).
+[  +60 ms] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\INSTALL.vcxproj" (1) is building "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ALL_BUILD.vcxproj" (3) on node 1 (default targets).
+[        ] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ALL_BUILD.vcxproj" (3) is building "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\flutter_wrapper_app.vcxproj" (4) on node 1 (default targets).
+[        ] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\flutter_wrapper_app.vcxproj" (4) is building "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\flutter_assemble.vcxproj" (5) on node 1 (default targets).
+[        ] PrepareForBuild:
+[        ]   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+[        ] InitializeBuildStatus:
+[        ]   Creating "x64\Release\flutter_assemble\flutter_assemble.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+[        ]   Touching "x64\Release\flutter_assemble\flutter_assemble.tlog\unsuccessfulbuild".
+[   +2 ms] CustomBuild:
+[        ]   "The build of 'E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\CMakeFiles\e1d449fbca697b10ce62498ebc50f532\flutter_assemble.rule' depends on 'E:\SUHAIB\FLUTTERPROJECT\TESTING-CT\WACOM_APP\WINDOWS\FLUTTER\EPHEMERAL\FLUTTER_WINDOWS.DLL' which is produced by the build of 'E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\CMakeFiles\46f8b81519c109bd90ab6324971e1eb5\flutter_windows.dll.rule'. The items cannot be built in parallel."
+[  +49 ms]   Generating E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/flutter_windows.dll, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/flutter_export.h, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/flutter_windows.h, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/flutter_messenger.h, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/flutter_plugin_registrar.h, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/flutter_texture_registrar.h, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/cpp_client_wrapper/core_implementations.cc, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/cpp_client_wrapper/standard_codec.cc, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/cpp_client_wrapper/plugin_registrar.cc, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/cpp_client_wrapper/flutter_engine.cc, E:/suhaib/flutterproject/testing-ct/wacom_app/windows/flutter/ephemeral/cpp_client_wrapper/flutter_view_controller.cc, _phony_
+[ +912 ms]   [ +212 ms] Artifact Instance of 'MaterialFonts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'GradleWrapper' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'AndroidGenSnapshotArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'AndroidInternalBuildArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IOSEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterWebSdk' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LegacyCanvasKitRemover' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterSdk' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'WindowsEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'MacOSEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LinuxEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LinuxFuchsiaSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'MacOSFuchsiaSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterRunnerSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterRunnerDebugSymbols' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
+[   +2 ms]   [  +10 ms] Artifact Instance of 'AndroidGenSnapshotArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'AndroidInternalBuildArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IOSEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterWebSdk' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterEngineStamp' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LegacyCanvasKitRemover' is not required, skipping update.
+[   +2 ms]   [   +2 ms] Artifact Instance of 'WindowsEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'MacOSEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LinuxEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LinuxFuchsiaSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'MacOSFuchsiaSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterRunnerSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterRunnerDebugSymbols' is not required, skipping update.
+[  +38 ms]   [  +38 ms] Artifact Instance of 'MaterialFonts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'GradleWrapper' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'AndroidGenSnapshotArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'AndroidInternalBuildArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IOSEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterWebSdk' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterEngineStamp' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LegacyCanvasKitRemover' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterSdk' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'MacOSEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LinuxEngineArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'LinuxFuchsiaSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'MacOSFuchsiaSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterRunnerSDKArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FlutterRunnerDebugSymbols' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'IosUsbArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'FontSubsetArtifacts' is not required, skipping update.
+[        ]   [        ] Artifact Instance of 'PubDependencies' is not required, skipping update.
+[   +6 ms]   [   +6 ms] Initializing file store
+[   +8 ms]   [   +8 ms] Done initializing file store
+[  +31 ms]   [  +31 ms] Skipping target: dart_build
+[        ]   [   +1 ms] Skipping target: gen_dart_plugin_registrant
+[+1795 ms]   [+1795 ms] Skipping target: unpack_windows
+[        ]   [        ] Skipping target: install_code_assets
+[        ]   [        ] Skipping target: gen_localizations
+[ +214 ms]   [ +213 ms] Skipping target: kernel_snapshot_program
+[  +11 ms]   [  +12 ms] Skipping target: aot_elf_release
+[  +10 ms]   [  +10 ms] Skipping target: windows_aot_bundle
+[  +21 ms]   [  +21 ms] Skipping target: release_bundle_windows-x64_assets
+[        ]   [        ] Persisting file store
+[   +6 ms]   [   +6 ms] Done persisting file store
+[   +7 ms]   [   +7 ms] build succeeded.
+[        ]   [        ] "flutter assemble" took 2,165ms.
+[  +41 ms]   [  +40 ms] Running 1 shutdown hook
+[        ]   [   +1 ms] Shutdown hooks complete
+[        ]   [        ] exiting with code 0
+[  +44 ms] FinalizeBuildStatus:
+[        ]   Deleting file "x64\Release\flutter_assemble\flutter_assemble.tlog\unsuccessfulbuild".
+[        ]   Touching "x64\Release\flutter_assemble\flutter_assemble.tlog\flutter_assemble.lastbuildstate".
+[        ] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\flutter_assemble.vcxproj" (default targets).
+[   +2 ms] PrepareForBuild:
+[        ]   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+[        ] InitializeBuildStatus:
+[        ]   Creating "flutter_wrapper_app.dir\Release\flutter_.93CEFFF9.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+[        ]   Touching "flutter_wrapper_app.dir\Release\flutter_.93CEFFF9.tlog\unsuccessfulbuild".
+[        ] CustomBuild:
+[        ]   All outputs are up-to-date.
+[  +35 ms] ClCompile:
+[        ]   All outputs are up-to-date.
+[  +14 ms] Lib:
+[        ]   All outputs are up-to-date.
+[   +1 ms]   flutter_wrapper_app.vcxproj -> E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\Release\flutter_wrapper_app.lib
+[   +7 ms] FinalizeBuildStatus:
+[        ]   Deleting file "flutter_wrapper_app.dir\Release\flutter_.93CEFFF9.tlog\unsuccessfulbuild".
+[        ]   Touching "flutter_wrapper_app.dir\Release\flutter_.93CEFFF9.tlog\flutter_wrapper_app.lastbuildstate".
+[        ] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\flutter_wrapper_app.vcxproj" (default targets).
+[  +15 ms] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ALL_BUILD.vcxproj" (3) is building "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\flutter_wrapper_plugin.vcxproj" (6) on node 1 (default targets).
+[        ] PrepareForBuild:
+[        ]   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+[        ] InitializeBuildStatus:
+[        ]   Creating "flutter_wrapper_plugin.dir\Release\flutter_.D93C1401.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+[        ]   Touching "flutter_wrapper_plugin.dir\Release\flutter_.D93C1401.tlog\unsuccessfulbuild".
+[        ] CustomBuild:
+[        ]   All outputs are up-to-date.
+[   +4 ms] ClCompile:
+[        ]   All outputs are up-to-date.
+[   +1 ms] Lib:
+[        ]   All outputs are up-to-date.
+[        ]   flutter_wrapper_plugin.vcxproj -> E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\Release\flutter_wrapper_plugin.lib
+[   +6 ms] FinalizeBuildStatus:
+[        ]   Deleting file "flutter_wrapper_plugin.dir\Release\flutter_.D93C1401.tlog\unsuccessfulbuild".
+[        ]   Touching "flutter_wrapper_plugin.dir\Release\flutter_.D93C1401.tlog\flutter_wrapper_plugin.lastbuildstate".
+[        ] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\flutter\flutter_wrapper_plugin.vcxproj" (default targets).
+[  +31 ms] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ALL_BUILD.vcxproj" (3) is building "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\runner\wacom_app.vcxproj" (7) on node 1 (default targets).
+[        ] Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\runner\wacom_app.vcxproj" (7) is building "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\plugins\wacom_stu_plugin\wacom_stu_plugin_plugin.vcxproj" (8) on node 1 (default targets).
+[        ] PrepareForBuild:
+[        ]   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+[        ] InitializeBuildStatus:
+[        ]   Creating "wacom_stu_plugin_plugin.dir\Release\wacom_st.16805979.tlog\unsuccessfulbuild" because "AlwaysCreate" was specified.
+[        ]   Touching "wacom_stu_plugin_plugin.dir\Release\wacom_st.16805979.tlog\unsuccessfulbuild".
+[        ] CustomBuild:
+[        ]   All outputs are up-to-date.
+[  +18 ms] ClCompile:
+[        ]   All outputs are up-to-date.
+[  +21 ms] Link:
+[        ]   All outputs are up-to-date.
+[   +2 ms]   wacom_stu_plugin_plugin.vcxproj -> E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\plugins\wacom_stu_plugin\Release\wacom_stu_plugin_plugin.dll
+[   +4 ms] FinalizeBuildStatus:
+[        ]   Deleting file "wacom_stu_plugin_plugin.dir\Release\wacom_st.16805979.tlog\unsuccessfulbuild".
+[        ]   Touching "wacom_stu_plugin_plugin.dir\Release\wacom_st.16805979.tlog\wacom_stu_plugin_plugin.lastbuildstate".
+[        ] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\plugins\wacom_stu_plugin\wacom_stu_plugin_plugin.vcxproj" (default targets).
+[   +3 ms] PrepareForBuild:
+[        ]   Structured output is enabled. The formatting of compiler diagnostics will reflect the error hierarchy. See https://aka.ms/cpp/structured-output for more details.
+[        ] InitializeBuildStatus:
+[        ]   Touching "wacom_app.dir\Release\wacom_app.tlog\unsuccessfulbuild".
+[        ] CustomBuild:
+[        ]   All outputs are up-to-date.
+[   +8 ms] ClCompile:
+[        ]   All outputs are up-to-date.
+[   +3 ms] ResourceCompile:
+[        ]   All outputs are up-to-date.
+[   +5 ms] Link:
+[        ]   C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Tools\MSVC\14.44.35207\bin\HostX64\x64\link.exe /ERRORREPORT:QUEUE /OUT:"E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\runner\Release\wacom_app.exe" /INCREMENTAL:NO /NOLOGO ..\flutter\Release\flutter_wrapper_app.lib dwmapi.lib ..\plugins\wacom_stu_plugin\Release\wacom_stu_plugin_plugin.lib "E:\suhaib\flutterproject\testing-ct\wacom_app\windows\flutter\ephemeral\flutter_windows.dll.lib" kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:"E:\suhaib\flutterproject\testing-ct\wacom_app\windows\runner\runner.exe.manifest" /PDB:"E:/suhaib/flutterproject/testing-ct/wacom_app/build/windows/x64/runner/Release/wacom_app.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/suhaib/flutterproject/testing-ct/wacom_app/build/windows/x64/runner/Release/wacom_app.lib" /MACHINE:X64  /machine:x64 wacom_app.dir\Release\Runner.res
+[        ]   wacom_app.dir\Release\flutter_window.obj
+[        ]   wacom_app.dir\Release\main.obj
+[        ]   wacom_app.dir\Release\utils.obj
+[        ]   wacom_app.dir\Release\win32_window.obj
+[        ]   wacom_app.dir\Release\generated_plugin_registrant.obj
+[  +30 ms] LINK : fatal error LNK1181: cannot open input file '..\plugins\wacom_stu_plugin\Release\wacom_stu_plugin_plugin.lib' [E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\runner\wacom_app.vcxproj]
+[   +7 ms] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\runner\wacom_app.vcxproj" (default targets) -- FAILED.
+[        ] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ALL_BUILD.vcxproj" (default targets) -- FAILED.
+[        ] Done Building Project "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\INSTALL.vcxproj" (default targets) -- FAILED.
+[   +1 ms] Build FAILED.
+[   +2 ms] "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\INSTALL.vcxproj" (default target) (1) ->
+[        ] "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\ALL_BUILD.vcxproj" (default target) (3) ->
+[        ] "E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\runner\wacom_app.vcxproj" (default target) (7) ->
+[        ] (Link target) -> 
+[        ]   LINK : fatal error LNK1181: cannot open input file '..\plugins\wacom_stu_plugin\Release\wacom_stu_plugin_plugin.lib' [E:\suhaib\flutterproject\testing-ct\wacom_app\build\windows\x64\runner\wacom_app.vcxproj]
+[        ]     0 Warning(s)
+[        ]     1 Error(s)
+[        ] Time Elapsed 00:00:03.67
+[  +14 ms] Building Windows application... (completed in 4.5s)
+[        ] "flutter windows" took 4,681ms.
+[  +46 ms] Build process failed.
+[        ] 
+           #0      throwToolExit (package:flutter_tools/src/base/common.dart:34:3)
+           #1      _runBuild (package:flutter_tools/src/windows/build_windows.dart:262:5)
+           <asynchronous suspension>
+           #2      buildWindows (package:flutter_tools/src/windows/build_windows.dart:118:5)
+           <asynchronous suspension>
+           #3      BuildWindowsCommand.runCommand (package:flutter_tools/src/commands/build_windows.dart:72:5)
+           <asynchronous suspension>
+           #4      FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1590:27)
+           <asynchronous suspension>
+           #5      AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+           <asynchronous suspension>
+           #6      CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+           <asynchronous suspension>
+           #7      FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:496:9)
+           <asynchronous suspension>
+           #8      AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+           <asynchronous suspension>
+           #9      FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:431:5)
+           <asynchronous suspension>
+           #10     FlutterCommandRunner.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:307:33)
+           <asynchronous suspension>
+           #11     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:104:11)
+           <asynchronous suspension>
+           #12     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:154:19)
+           <asynchronous suspension>
+           #13     main (package:flutter_tools/executable.dart:103:3)
+           <asynchronous suspension>
+
+
+[        ] Running 1 shutdown hook
+[   +2 ms] Shutdown hooks complete
+[        ] exiting with code 1
