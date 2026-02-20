@@ -8,6 +8,9 @@
 
 using flutter::EncodableValue;
 
+// Custom Window Message ID
+#define WM_WACOM_EVENT (WM_USER + 101)
+
 // PenHandler to process reports
 class PenHandler : public WacomGSS::STU::ProtocolHelper::ReportHandler {
 public:
@@ -109,7 +112,39 @@ void WacomStuPlugin::RegisterWithRegistrar(
   event_channel->SetStreamHandler(
       std::make_unique<ForwardingStreamHandler>(plugin.get()));
 
+  // Capture raw pointer before move
+  WacomStuPlugin* plugin_ptr = plugin.get();
+
+  // Register Window Proc
+  plugin_ptr->windowId = registrar->RegisterTopLevelWindowProcDelegate(
+      [plugin_ptr](HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
+        return plugin_ptr->HandleWindowProc(hwnd, message, wparam, lparam);
+      });
+
   registrar->AddPlugin(std::move(plugin));
+}
+
+// ... existing OnListen/OnCancel ...
+
+// Implement WindowProc
+std::optional<LRESULT> WacomStuPlugin::HandleWindowProc(
+      HWND windowArg,
+      UINT message,
+      WPARAM wparam,
+      LPARAM lparam) {
+    if (message == WM_WACOM_EVENT) {
+        std::lock_guard<std::mutex> lock(queueMutex);
+        std::lock_guard<std::mutex> sinkLock(sinkMutex);
+        
+        while (!eventQueue.empty()) {
+            if (eventSink) {
+                eventSink->Success(eventQueue.front());
+            }
+            eventQueue.pop();
+        }
+        return 0;
+    }
+    return std::nullopt;
 }
 
 std::unique_ptr<flutter::StreamHandlerError<EncodableValue>> WacomStuPlugin::OnListenInternal(
@@ -129,6 +164,9 @@ std::unique_ptr<flutter::StreamHandlerError<EncodableValue>> WacomStuPlugin::OnC
     return nullptr;
 }
 
+// Custom Window Message ID
+#define WM_WACOM_EVENT (WM_USER + 101)
+
 void WacomStuPlugin::StartReportThread() {
     if (keepRunning) return;
     
@@ -137,11 +175,31 @@ void WacomStuPlugin::StartReportThread() {
 
     keepRunning = true;
     reportThread = std::thread([this]() {
-        // Init pen handler with callback to sink
+        // Init pen handler with callback to queue
         PenHandler penHandler([this](const EncodableValue& val) {
-            std::lock_guard<std::mutex> lock(sinkMutex);
-            if (eventSink) {
-                eventSink->Success(val);
+            {
+                std::lock_guard<std::mutex> lock(queueMutex);
+                eventQueue.push(val);
+            }
+            // Notify main thread
+            // We need a handle. Since we are in a thread, we can't easily get the main window handle 
+            // without storing it. But PostMessage to the active window usually works for single window apps,
+            // or we can assume the registrar's window is active.
+            // Better: Store HWND in RegisterWithRegistrar if possible, but we didn't.
+            // Let's use GetActiveWindow() as a fallback or Broadcast? No.
+            // Actually, we can pass it.
+            // Notify main thread
+            // If we don't have the handle yet, try to find it.
+            HWND targetWindow = hwnd;
+            if (!targetWindow) {
+                targetWindow = FindWindow(L"FLUTTER_RUNNER_WIN32_WINDOW", nullptr);
+                if (targetWindow) {
+                    hwnd = targetWindow; // Cache it
+                }
+            }
+
+            if (targetWindow) {
+                PostMessage(targetWindow, WM_WACOM_EVENT, 0, 0);
             }
         });
 
@@ -161,9 +219,6 @@ void WacomStuPlugin::StartReportThread() {
                 // Ignore transient errors
             }
         }
-        
-        // Queue is automatically cleaned up when it goes out of scope (destructor)
-        // or we can explicitly clear/disconnect if needed, but SDK handles it mostly.
     });
 }
 

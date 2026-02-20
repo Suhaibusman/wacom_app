@@ -6,6 +6,7 @@ import 'package:path/path.dart' as path;
 import '../../../core/providers.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../pdf_viewer/ui/pdf_viewer_screen.dart';
+import 'widgets/wacom_connect_button.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -73,32 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: const Text("Wacom PDF Signer"),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
-        actions: [
-          Consumer(
-            builder: (context, ref, child) {
-              final connectionState = ref.watch(wacomConnectionProvider);
-              return IconButton(
-                icon: Icon(
-                  connectionState.isConnected ? Icons.usb : Icons.usb_off,
-                  color: connectionState.isConnected
-                      ? Colors.greenAccent
-                      : Colors.white54,
-                ),
-                tooltip: connectionState.isConnected
-                    ? "Wacom Connected"
-                    : "Connect Wacom",
-                onPressed: () {
-                  if (connectionState.isConnected) {
-                    ref.read(wacomConnectionProvider.notifier).disconnect();
-                  } else {
-                    ref.read(wacomConnectionProvider.notifier).connect();
-                  }
-                },
-              );
-            },
-          ),
-          const SizedBox(width: 8),
-        ],
+        actions: const [WacomConnectButton()],
       ),
       body: CustomScrollView(
         slivers: [

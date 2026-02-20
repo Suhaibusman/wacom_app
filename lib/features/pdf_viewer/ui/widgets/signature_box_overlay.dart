@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 class SignatureBoxOverlay extends StatefulWidget {
-  final Offset initialPosition;
+  final Rect rect; // Changed from initialPosition
   final Function(Rect) onUpdate;
   final VoidCallback onConfirm;
   final VoidCallback onDelete;
@@ -10,7 +10,7 @@ class SignatureBoxOverlay extends StatefulWidget {
 
   const SignatureBoxOverlay({
     super.key,
-    required this.initialPosition,
+    required this.rect,
     required this.onUpdate,
     required this.onConfirm,
     required this.onDelete,
@@ -28,32 +28,29 @@ class _SignatureBoxOverlayState extends State<SignatureBoxOverlay> {
   @override
   void initState() {
     super.initState();
-    _position = widget.initialPosition;
-    _size = const Size(200, 100);
-    // Initial update
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.onUpdate(
-        Rect.fromLTWH(_position.dx, _position.dy, _size.width, _size.height),
-      );
-    });
+    _position = widget.rect.topLeft;
+    _size = widget.rect.size;
+  }
+
+  @override
+  void didUpdateWidget(SignatureBoxOverlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.rect != widget.rect) {
+      _position = widget.rect.topLeft;
+      _size = widget.rect.size;
+    }
   }
 
   void _updatePosition(Offset newPosition) {
     setState(() {
       _position = newPosition;
     });
-    widget.onUpdate(
-      Rect.fromLTWH(_position.dx, _position.dy, _size.width, _size.height),
-    );
   }
 
   void _updateSize(Size newSize) {
     setState(() {
       _size = newSize;
     });
-    widget.onUpdate(
-      Rect.fromLTWH(_position.dx, _position.dy, _size.width, _size.height),
-    );
   }
 
   @override
@@ -80,6 +77,17 @@ class _SignatureBoxOverlayState extends State<SignatureBoxOverlay> {
               child: GestureDetector(
                 onPanUpdate: (details) {
                   _updatePosition(_position + details.delta);
+                },
+                onPanEnd: (details) {
+                  // Commit final position to parent
+                  widget.onUpdate(
+                    Rect.fromLTWH(
+                      _position.dx,
+                      _position.dy,
+                      _size.width,
+                      _size.height,
+                    ),
+                  );
                 },
                 onTap: widget.onConfirm, // Setup tap to open dialog
                 child: Container(
@@ -109,6 +117,16 @@ class _SignatureBoxOverlayState extends State<SignatureBoxOverlay> {
                     Size(
                       (_size.width + details.delta.dx).clamp(100.0, 500.0),
                       (_size.height + details.delta.dy).clamp(50.0, 300.0),
+                    ),
+                  );
+                },
+                onPanEnd: (details) {
+                  widget.onUpdate(
+                    Rect.fromLTWH(
+                      _position.dx,
+                      _position.dy,
+                      _size.width,
+                      _size.height,
                     ),
                   );
                 },

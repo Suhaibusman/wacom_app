@@ -3,9 +3,11 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  screen_retriever_windows
   syncfusion_pdfviewer_windows
   url_launcher_windows
   wacom_stu_plugin
+  window_manager
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

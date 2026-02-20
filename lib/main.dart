@@ -3,8 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/constants/app_colors.dart';
 import 'features/home/ui/home_screen.dart';
 
-void main() {
+import 'package:window_manager/window_manager.dart';
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+
+  WindowOptions windowOptions = const WindowOptions(
+    size: Size(1280, 720),
+    center: true,
+    backgroundColor: Colors.transparent,
+    skipTaskbar: false,
+    titleBarStyle: TitleBarStyle.normal,
+  );
+
+  windowManager.waitUntilReadyToShow(windowOptions, () async {
+    await windowManager.maximize();
+    await windowManager.show();
+    await windowManager.focus();
+  });
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

@@ -3,10 +3,14 @@ import 'package:wacom_app/core/services/file_service.dart';
 import 'package:wacom_app/core/services/pdf_service.dart';
 import 'package:wacom_app/core/services/recent_files_service.dart';
 import 'package:wacom_app/core/services/wacom_service.dart';
+import 'package:wacom_app/core/services/signature_storage_service.dart';
 
 final wacomServiceProvider = Provider<WacomService>((ref) => WacomService());
 final fileServiceProvider = Provider<FileService>((ref) => FileService());
 final pdfServiceProvider = Provider<PdfService>((ref) => PdfService());
+final signatureStorageServiceProvider = Provider<SignatureStorageService>(
+  (ref) => SignatureStorageService(),
+);
 final recentFilesServiceProvider = Provider<RecentFilesService>(
   (ref) => RecentFilesService(),
 );

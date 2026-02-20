@@ -6,6 +6,7 @@
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
+#include <flutter/standard_method_codec.h>
 #include <memory>
 
 // Forward declarations
@@ -23,6 +24,8 @@ namespace wgssSTU = WacomGSS::STU;
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <queue>
+#include <windows.h>
 
 class WacomStuPlugin : public flutter::Plugin, public flutter::StreamHandler<flutter::EncodableValue> {
  public:
@@ -58,4 +61,17 @@ class WacomStuPlugin : public flutter::Plugin, public flutter::StreamHandler<flu
   // Event Sink
   std::unique_ptr<flutter::EventSink<flutter::EncodableValue>> eventSink;
   std::mutex sinkMutex;
+
+  // Thread-safe event queue
+  std::queue<flutter::EncodableValue> eventQueue;
+  std::mutex queueMutex;
+  
+  // Windows message handling
+  HWND hwnd = nullptr;
+  int windowId = -1;
+  std::optional<LRESULT> HandleWindowProc(
+      HWND windowArg,
+      UINT message,
+      WPARAM wparam,
+      LPARAM lparam);
 };
