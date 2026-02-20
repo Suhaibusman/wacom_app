@@ -1,0 +1,19 @@
+﻿Analyzing wacom_app...                                          
+
+warning - Unused import: 'package:path_provider/path_provider.dart' - lib\core\services\file_service.dart:3:8 - unused_import
+   info - The imported package 'path' isn't a dependency of the importing package - lib\core\services\file_service.dart:4:8 - depend_on_referenced_packages
+warning - Unused import: 'package:path/path.dart' - lib\core\services\file_service.dart:4:8 - unused_import
+  error - Undefined class 'Size' - lib\core\services\pdf_service.dart:30:13 - undefined_class
+   info - Type could be non-nullable - lib\core\services\pdf_service.dart:30:18 - unnecessary_nullable_for_final_variable_declarations
+  error - Undefined name 'Rect' - lib\core\services\pdf_service.dart:47:9 - undefined_identifier
+   info - Don't invoke 'print' in production code - lib\core\services\wacom_service.dart:48:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\core\services\wacom_service.dart:73:7 - avoid_print
+   info - The imported package 'path' isn't a dependency of the importing package - lib\features\home\ui\home_screen.dart:5:8 - depend_on_referenced_packages
+   info - The imported package 'path' isn't a dependency of the importing package - lib\features\pdf_viewer\ui\pdf_viewer_screen.dart:7:8 - depend_on_referenced_packages
+   info - Don't invoke 'print' in production code - lib\features\pdf_viewer\ui\pdf_viewer_screen.dart:45:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\features\pdf_viewer\ui\pdf_viewer_screen.dart:52:5 - avoid_print
+   info - Don't invoke 'print' in production code - lib\features\pdf_viewer\ui\pdf_viewer_screen.dart:58:7 - avoid_print
+   info - Don't invoke 'print' in production code - lib\features\pdf_viewer\ui\pdf_viewer_screen.dart:60:7 - avoid_print
+   info - Don't use 'BuildContext's across async gaps - lib\features\pdf_viewer\ui\pdf_viewer_screen.dart:103:34 - use_build_context_synchronously
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\pdf_viewer\ui\widgets\signature_box_overlay.dart:71:29 - deprecated_member_use
+
