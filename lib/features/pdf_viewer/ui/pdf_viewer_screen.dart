@@ -43,6 +43,12 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   final PdfViewerController _pdfController = PdfViewerController();
   final GlobalKey _pdfKey = GlobalKey();
 
+  // Mouse Drag-to-Draw State
+  bool _isDrawingMode = false;
+  Offset? _dragStartScreenPos;
+  Offset? _dragCurrentScreenPos;
+  int? _dragPageIndex;
+
   // PDF Metadata
   PdfDocument? _document;
   List<Size>? _pageSizes;
@@ -169,72 +175,28 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     return Rect.fromLTWH(screenX, screenY, screenW, screenH);
   }
 
-  void _addSignatureBox() {
-    if (!_isDocumentLoaded || _pageSizes == null) return;
-
-    final int pageNum = _pdfController.pageNumber;
-    final int pageIndex = pageNum > 0 ? pageNum - 1 : 0;
-
-    if (pageIndex < 0 || pageIndex >= _pageSizes!.length) return;
-
-    final pageSize = _pageSizes![pageIndex];
-
-    const double w = 200;
-    const double h = 100;
-
-    final pdfRect = Rect.fromLTWH(
-      (pageSize.width - w) / 2,
-      (pageSize.height - h) / 2,
-      w,
-      h,
-    );
-
-    debugPrint("Adding Signature Box on Page: ${pageIndex + 1}");
-
+  void _toggleDrawingMode() {
     setState(() {
-      _signatures.add(
-        SignatureBoxModel(
-          id: const Uuid().v4(),
-          pdfRect: pdfRect,
-          pageIndex: pageIndex,
+      _isDrawingMode = !_isDrawingMode;
+      // Reset drag state if toggling off
+      if (!_isDrawingMode) {
+        _dragStartScreenPos = null;
+        _dragCurrentScreenPos = null;
+        _dragPageIndex = null;
+      }
+    });
+
+    if (_isDrawingMode) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Draw Mode: Click and drag on the PDF to create a signature box.",
+          ),
+          duration: Duration(seconds: 2),
         ),
       );
-    });
+    }
   }
-  // void _addSignatureBox() {
-  //   // Basic implementation: Add to the CURRENT page center
-  //   if (!_isDocumentLoaded || _pageSizes == null) return;
-
-  //   // Get current page (1-based from controller)
-  //   final int pageNum = _pdfController.pageNumber;
-  //   final int pageIndex = pageNum - 1;
-
-  //   if (pageIndex < 0 || pageIndex >= _pageSizes!.length) return;
-
-  //   final pageSize = _pageSizes![pageIndex];
-  //   // Center of the PDF page
-  //   final double w = 200;
-  //   final double h = 100;
-
-  //   final pdfRect = Rect.fromLTWH(
-  //     (pageSize.width - w) / 2,
-  //     (pageSize.height - h) / 2,
-  //     w,
-  //     h,
-  //   );
-
-  //   debugPrint("Adding Signature Box on Page: $pageNum (Index: $pageIndex)");
-
-  //   setState(() {
-  //     _signatures.add(
-  //       SignatureBoxModel(
-  //         id: const Uuid().v4(),
-  //         pdfRect: pdfRect,
-  //         pageIndex: pageIndex,
-  //       ),
-  //     );
-  //   });
-  // }
 
   void _showSignatureOptions(SignatureBoxModel model) {
     showModalBottomSheet(
@@ -444,31 +406,74 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(
-          path.basename(widget.file.path),
-          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+        backgroundColor: AppColors.surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 2,
+        shadowColor: AppColors.border,
+        centerTitle: false,
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              path.basename(widget.file.path),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+            ),
+            const SizedBox(height: 2),
+            const Text(
+              "PDF Viewer",
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.zoom_out),
-            tooltip: 'Zoom Out',
-            onPressed: () {
-              setState(() {
-                _pdfController.zoomLevel = (_pdfController.zoomLevel - 0.25)
-                    .clamp(0.5, 3.0);
-              });
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.zoom_in),
-            tooltip: 'Zoom In',
-            onPressed: () {
-              setState(() {
-                _pdfController.zoomLevel = (_pdfController.zoomLevel + 0.25)
-                    .clamp(0.5, 3.0);
-              });
-            },
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceHover,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.zoom_out, size: 20),
+                  tooltip: 'Zoom Out',
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () {
+                    setState(() {
+                      _pdfController.zoomLevel = (_pdfController.zoomLevel - 0.25)
+                          .clamp(0.5, 3.0);
+                    });
+                  },
+                ),
+                Container(
+                  width: 1,
+                  height: 22,
+                  color: AppColors.border,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.zoom_in, size: 20),
+                  tooltip: 'Zoom In',
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () {
+                    setState(() {
+                      _pdfController.zoomLevel = (_pdfController.zoomLevel + 0.25)
+                          .clamp(0.5, 3.0);
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -481,6 +486,8 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
               icon: const Icon(Icons.save_rounded, size: 20),
               label: const Text("Save Document"),
               style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -489,6 +496,10 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
             ),
           ),
         ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: AppColors.border),
+        ),
       ),
       body: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
@@ -559,23 +570,164 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                     );
                   }),
 
-                // Floating Action Button to add signature
+                // Invisible gesture detector over the PDF for drawing mode
+                if (_isDrawingMode)
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onPanStart: (details) {
+                        setState(() {
+                          _dragStartScreenPos = details.localPosition;
+                          _dragCurrentScreenPos = details.localPosition;
+                          _dragPageIndex = _pdfController.pageNumber > 0
+                              ? _pdfController.pageNumber - 1
+                              : 0;
+                        });
+                      },
+                      onPanUpdate: (details) {
+                        setState(() {
+                          _dragCurrentScreenPos = details.localPosition;
+                        });
+                      },
+                      onPanEnd: (details) {
+                        if (_dragStartScreenPos != null &&
+                            _dragCurrentScreenPos != null &&
+                            _dragPageIndex != null &&
+                            _pageSizes != null) {
+                          // Calculate screen rect bounding box
+                          final rawLeft = _dragStartScreenPos!.dx;
+                          final rawTop = _dragStartScreenPos!.dy;
+                          final rawRight = _dragCurrentScreenPos!.dx;
+                          final rawBottom = _dragCurrentScreenPos!.dy;
+
+                          final screenRect = Rect.fromLTRB(
+                            rawLeft < rawRight ? rawLeft : rawRight,
+                            rawTop < rawBottom ? rawTop : rawBottom,
+                            rawLeft > rawRight ? rawLeft : rawRight,
+                            rawTop > rawBottom ? rawTop : rawBottom,
+                          );
+
+                          // Enforce minimum size so users don't make tiny accidental cliques
+                          if (screenRect.width > 30 && screenRect.height > 20) {
+                            final zoom =
+                                _pdfController.zoomLevel * _internalScale;
+                            final scroll = _pdfController.scrollOffset;
+
+                            // Reverse engineer screen -> pdf coordinates
+                            // We need page top and left margins based on the zoom
+                            double pageTop = 0;
+                            for (int i = 0; i < _dragPageIndex!; i++) {
+                              pageTop +=
+                                  (_pageSizes![i].height * zoom) +
+                                  (8.0 * zoom); // 8 is pageSpacing
+                            }
+
+                            double marginLeft = 0;
+                            if (_viewportSize != null) {
+                              final pageWidthScaled =
+                                  _pageSizes![_dragPageIndex!].width * zoom;
+                              if (pageWidthScaled < _viewportSize!.width) {
+                                marginLeft =
+                                    (_viewportSize!.width - pageWidthScaled) /
+                                    2;
+                              }
+                            }
+
+                            final double pdfX =
+                                (screenRect.left + scroll.dx - marginLeft) /
+                                zoom;
+                            final double pdfY =
+                                (screenRect.top + scroll.dy - pageTop) / zoom;
+                            final double pdfW = screenRect.width / zoom;
+                            final double pdfH = screenRect.height / zoom;
+
+                            setState(() {
+                              _signatures.add(
+                                SignatureBoxModel(
+                                  id: const Uuid().v4(),
+                                  pdfRect: Rect.fromLTWH(
+                                    pdfX,
+                                    pdfY,
+                                    pdfW,
+                                    pdfH,
+                                  ),
+                                  pageIndex: _dragPageIndex!,
+                                ),
+                              );
+                              // Exit drawing mode automatically after successful draw
+                              _toggleDrawingMode();
+                            });
+                          } else {
+                            // Box too small, just cancel and let them try again
+                            setState(() {
+                              _dragStartScreenPos = null;
+                              _dragCurrentScreenPos = null;
+                            });
+                          }
+                        }
+                      },
+                      child: Stack(
+                        children: [
+                          if (_dragStartScreenPos != null &&
+                              _dragCurrentScreenPos != null)
+                            Positioned(
+                              left:
+                                  _dragStartScreenPos!.dx <
+                                      _dragCurrentScreenPos!.dx
+                                  ? _dragStartScreenPos!.dx
+                                  : _dragCurrentScreenPos!.dx,
+                              top:
+                                  _dragStartScreenPos!.dy <
+                                      _dragCurrentScreenPos!.dy
+                                  ? _dragStartScreenPos!.dy
+                                  : _dragCurrentScreenPos!.dy,
+                              width:
+                                  (_dragCurrentScreenPos!.dx -
+                                          _dragStartScreenPos!.dx)
+                                      .abs(),
+                              height:
+                                  (_dragCurrentScreenPos!.dy -
+                                          _dragStartScreenPos!.dy)
+                                      .abs(),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: AppColors.primary,
+                                    width: 2,
+                                    strokeAlign: BorderSide.strokeAlignOutside,
+                                  ),
+                                  color: AppColors.primaryLight.withValues(
+                                    alpha: 0.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                // Floating Action Button to toggle drawing mode OR add signature
                 Positioned(
                   bottom: 32,
                   right: 32,
                   child: FloatingActionButton.extended(
-                    onPressed: _addSignatureBox,
+                    onPressed: _toggleDrawingMode,
                     elevation: 4,
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: _isDrawingMode
+                        ? AppColors.error
+                        : AppColors.primary,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    label: const Text(
-                      "Add Signature Box",
-                      style: TextStyle(fontWeight: FontWeight.w600),
+                    label: Text(
+                      _isDrawingMode ? "Cancel Drawing" : "Draw Signature Box",
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    icon: const Icon(Icons.add_box_rounded),
+                    icon: Icon(
+                      _isDrawingMode ? Icons.close : Icons.draw_rounded,
+                    ),
                   ),
                 ),
               ],

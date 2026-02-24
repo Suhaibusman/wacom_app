@@ -20,7 +20,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     // Invalidate to force refresh
-    Future.microtask(() => ref.invalidate(recentFilesProvider));
+    Future.microtask(() {
+      ref.invalidate(recentFilesProvider);
+
+      // Auto-connect to Wacom on startup
+      final wacomState = ref.read(wacomConnectionProvider);
+      if (!wacomState.isConnected) {
+        ref.read(wacomConnectionProvider.notifier).connect();
+      }
+    });
   }
 
   void _openPdf() async {

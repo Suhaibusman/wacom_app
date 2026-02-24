@@ -246,9 +246,90 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
   @override
   void dispose() {
     _penSubscription?.cancel();
-    // Clear the Wacom screen on exit?
-    ref.read(wacomServiceProvider).clearScreen();
+    // Explicitly push an "Idle/Ready" screen to the Wacom device so the
+    // "Sign Here" buttons don't stay frozen on the screen.
+    final wacomService = ref.read(wacomServiceProvider);
+    final currentState = ref.read(wacomConnectionProvider);
+    if (currentState.isConnected && currentState.capabilities != null) {
+      _setWacomIdleScreen(currentState.capabilities!, wacomService);
+    }
     super.dispose();
+  }
+
+  Future<void> _setWacomIdleScreen(
+    Map<String, dynamic> caps,
+    WacomService service,
+  ) async {
+    final width = caps['screenWidth']?.toInt() ?? 800;
+    final height = caps['screenHeight']?.toInt() ?? 480;
+
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(
+      recorder,
+      Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+    );
+
+    // Draw White Background
+    canvas.drawRect(
+      Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
+      Paint()..color = Colors.white,
+    );
+
+    // Draw Text/Instructions
+    final textPainter = TextPainter(
+      text: const TextSpan(
+        text: "Sindh High Court",
+        style: TextStyle(
+          color: Colors.black,
+          fontSize: 32,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
+    textPainter.paint(
+      canvas,
+      Offset(
+        (width - textPainter.width) / 2,
+        (height - textPainter.height) / 2 - 20,
+      ),
+    );
+
+    final subtextPainter = TextPainter(
+      text: const TextSpan(
+        text: "Device Ready",
+        style: TextStyle(color: Colors.grey, fontSize: 24),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    subtextPainter.layout();
+    subtextPainter.paint(
+      canvas,
+      Offset(
+        (width - subtextPainter.width) / 2,
+        (height - subtextPainter.height) / 2 + 30,
+      ),
+    );
+
+    final picture = recorder.endRecording();
+    final img = await picture.toImage(width, height);
+    final byteData = await img.toByteData(format: ui.ImageByteFormat.rawRgba);
+
+    if (byteData != null) {
+      final rgbaBytes = byteData.buffer.asUint8List();
+      final int pixelCount = width * height;
+      final Uint8List rgbBytes = Uint8List(pixelCount * 3);
+
+      for (int i = 0; i < pixelCount; i++) {
+        final int rgbaIndex = i * 4;
+        final int rgbIndex = i * 3;
+        rgbBytes[rgbIndex] = rgbaBytes[rgbaIndex + 2]; // B
+        rgbBytes[rgbIndex + 1] = rgbaBytes[rgbaIndex + 1]; // G
+        rgbBytes[rgbIndex + 2] = rgbaBytes[rgbaIndex]; // R
+      }
+      await service.setSignatureScreen(rgbBytes, 4);
+    }
   }
 
   void _clear() {
