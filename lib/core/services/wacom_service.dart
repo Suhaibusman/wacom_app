@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 class WacomService {
   static const methodChannel = MethodChannel('wacom_stu_channel');
@@ -45,7 +46,7 @@ class WacomService {
     try {
       await methodChannel.invokeMethod('clearScreen');
     } on PlatformException catch (e) {
-      print("ClearScreen Error: ${e.message}");
+      debugPrint("ClearScreen Error: ${e.message}");
     }
   }
 
@@ -70,7 +71,7 @@ class WacomService {
         'mode': mode,
       });
     } catch (e) {
-      print("Error setting signature screen: $e");
+      debugPrint("Error setting signature screen: $e");
     }
   }
 }

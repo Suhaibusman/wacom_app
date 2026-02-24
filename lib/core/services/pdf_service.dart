@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -56,12 +55,18 @@ class PdfService {
             "WARNING: Signature might be out of bounds! MaxW=${pageSize.width}, MaxH=${pageSize.height}",
           );
         }
+        final double correctedY = pageSize.height - (y + height);
 
-        // Draw the signature image directly using PDF coordinates
         page.graphics.drawImage(
           PdfBitmap(image),
-          Rect.fromLTWH(x, y, width, height),
+          Rect.fromLTWH(x, correctedY, width, height),
         );
+
+        // Draw the signature image directly using PDF coordinates
+        // page.graphics.drawImage(
+        //   PdfBitmap(image),
+        //   Rect.fromLTWH(x, y, width, height),
+        // );
       }
 
       // Save the document

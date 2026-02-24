@@ -63,7 +63,7 @@ class _SavedSignaturesDialogState extends ConsumerState<SavedSignaturesDialog> {
                       GestureDetector(
                         onTap: () async {
                           final bytes = await file.readAsBytes();
-                          if (mounted) {
+                          if (context.mounted) {
                             Navigator.of(context).pop(bytes);
                           }
                         },

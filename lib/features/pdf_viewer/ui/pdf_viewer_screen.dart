@@ -49,7 +49,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 
   // Signature Boxes State
   final List<SignatureBoxModel> _signatures = [];
-
+  int _currentPageIndex = 0;
   Size? _viewportSize;
 
   // Debounce/Throttle for scroll updates if necessary
@@ -123,35 +123,33 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       }
     }
 
-    const double kShadowOffset = 10.0;
-
-    final double screenX =
-        (model.pdfRect.left * zoom) + marginLeft + kShadowOffset - scroll.dx;
-    final double screenY =
-        (model.pdfRect.top * zoom) + pageTop + kShadowOffset - scroll.dy;
+    final double screenX = (model.pdfRect.left * zoom) + marginLeft - scroll.dx;
+    final double screenY = (model.pdfRect.top * zoom) + pageTop - scroll.dy;
     final double screenW = model.pdfRect.width * zoom;
     final double screenH = model.pdfRect.height * zoom;
 
     // Debugging scroll tracking
-    // debugPrint("P${model.pageIndex} Scroll:${scroll.dy.toStringAsFixed(1)} Top:$pageTop Y:$screenY");
+    if (model.pageIndex > 0) {
+      // Log mainly for subsequent pages to reduce spam
+      debugPrint(
+        "Render Sig: P${model.pageIndex} | PageTop:$pageTop | Scroll:${scroll.dy} | ScreenY:$screenY | Rect:$screenX,$screenY",
+      );
+    }
 
     return Rect.fromLTWH(screenX, screenY, screenW, screenH);
   }
 
   void _addSignatureBox() {
-    // Basic implementation: Add to the CURRENT page center
     if (!_isDocumentLoaded || _pageSizes == null) return;
 
-    // Get current page (1-based from controller)
-    final int pageNum = _pdfController.pageNumber;
-    final int pageIndex = pageNum - 1;
+    final int pageIndex = _currentPageIndex;
 
     if (pageIndex < 0 || pageIndex >= _pageSizes!.length) return;
 
     final pageSize = _pageSizes![pageIndex];
-    // Center of the PDF page
-    final double w = 200;
-    final double h = 100;
+
+    const double w = 200;
+    const double h = 100;
 
     final pdfRect = Rect.fromLTWH(
       (pageSize.width - w) / 2,
@@ -159,6 +157,8 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       w,
       h,
     );
+
+    debugPrint("Adding Signature Box on Page: ${pageIndex + 1}");
 
     setState(() {
       _signatures.add(
@@ -170,6 +170,40 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       );
     });
   }
+  // void _addSignatureBox() {
+  //   // Basic implementation: Add to the CURRENT page center
+  //   if (!_isDocumentLoaded || _pageSizes == null) return;
+
+  //   // Get current page (1-based from controller)
+  //   final int pageNum = _pdfController.pageNumber;
+  //   final int pageIndex = pageNum - 1;
+
+  //   if (pageIndex < 0 || pageIndex >= _pageSizes!.length) return;
+
+  //   final pageSize = _pageSizes![pageIndex];
+  //   // Center of the PDF page
+  //   final double w = 200;
+  //   final double h = 100;
+
+  //   final pdfRect = Rect.fromLTWH(
+  //     (pageSize.width - w) / 2,
+  //     (pageSize.height - h) / 2,
+  //     w,
+  //     h,
+  //   );
+
+  //   debugPrint("Adding Signature Box on Page: $pageNum (Index: $pageIndex)");
+
+  //   setState(() {
+  //     _signatures.add(
+  //       SignatureBoxModel(
+  //         id: const Uuid().v4(),
+  //         pdfRect: pdfRect,
+  //         pageIndex: pageIndex,
+  //       ),
+  //     );
+  //   });
+  // }
 
   void _showSignatureOptions(SignatureBoxModel model) {
     showModalBottomSheet(
@@ -418,7 +452,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                     });
                   },
                   onPageChanged: (details) {
-                    setState(() {});
+                    _currentPageIndex = details.newPageNumber - 1;
                   },
                   onZoomLevelChanged: (details) {
                     setState(() {});

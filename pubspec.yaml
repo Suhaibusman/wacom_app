@@ -49,9 +49,13 @@ dependencies:
   intl: ^0.20.2
   syncfusion_flutter_pdf: ^32.2.5
   window_manager: ^0.5.1
+  path: ^1.9.0
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
 
   # The "flutter_lints" package below contains a set of recommended lints to
