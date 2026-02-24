@@ -328,59 +328,109 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text("Sign Here"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: canvasWidth,
-            height: canvasHeight,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              color: Colors.white,
-            ),
-            child: CustomPaint(
-              painter: _SignaturePainter(
-                strokes,
-                currentStroke,
-                _selectedColor,
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 0,
+      backgroundColor: AppColors.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Sign Here",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.textPrimary,
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _colorOption(Colors.black),
-              const SizedBox(width: 8),
-              _colorOption(Colors.blue),
-              const SizedBox(width: 8),
-              _colorOption(Colors.red),
-              const SizedBox(width: 8),
-              _colorOption(Colors.green),
-            ],
-          ),
-        ],
-      ),
-      actions: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Checkbox(
-              value: _saveSignature,
-              onChanged: (v) => setState(() => _saveSignature = v ?? false),
+            const SizedBox(height: 8),
+            const Text(
+              "Use your Wacom pen directly on this pad",
+              style: TextStyle(color: AppColors.textSecondary),
             ),
-            const Text("Save Signature"),
+            const SizedBox(height: 24),
+            Container(
+              width: canvasWidth,
+              height: canvasHeight,
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.border, width: 2),
+                borderRadius: BorderRadius.circular(12),
+                color: const Color(0xFFF8FAFC), // slightly off white
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: CustomPaint(
+                  painter: _SignaturePainter(
+                    strokes,
+                    currentStroke,
+                    _selectedColor,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _colorOption(const Color(0xFF0F172A)), // Ink Black
+                const SizedBox(width: 16),
+                _colorOption(const Color(0xFF2563EB)), // Deep Blue
+                const SizedBox(width: 16),
+                _colorOption(const Color(0xFFDC2626)), // Red
+              ],
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _saveSignature,
+                      activeColor: AppColors.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      onChanged: (v) =>
+                          setState(() => _saveSignature = v ?? false),
+                    ),
+                    const Text(
+                      "Save Signature",
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: _clear,
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                      ),
+                      child: const Text("Clear"),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                      ),
+                      child: const Text("Cancel"),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton(
+                      onPressed: _apply,
+                      child: const Text("Confirm"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ],
         ),
-        TextButton(onPressed: _clear, child: const Text("Clear")),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text("Cancel"),
-        ),
-        ElevatedButton(onPressed: _apply, child: const Text("Apply")),
-      ],
+      ),
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import 'package:wacom_app/core/providers.dart';
+import 'package:wacom_app/core/constants/app_colors.dart';
 import 'package:wacom_app/features/home/ui/widgets/wacom_connect_button.dart';
 import '../../signature/ui/signature_dialog.dart';
 import '../../signature/ui/saved_signatures_dialog.dart';
@@ -49,7 +50,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 
   // Signature Boxes State
   final List<SignatureBoxModel> _signatures = [];
-  int _currentPageIndex = 0;
   Size? _viewportSize;
 
   // Debounce/Throttle for scroll updates if necessary
@@ -83,8 +83,26 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
       for (int i = 0; i < _document!.pages.count; i++) {
         _pageSizes!.add(_document!.pages[i].getClientSize());
       }
+
       setState(() {
         _isDocumentLoaded = true;
+      });
+
+      // Attempt to auto-fit zoom after a short frame delay to allow LayoutBuilder to size
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (_viewportSize != null && _pageSizes!.isNotEmpty) {
+          double maxPageWidth = 0;
+          for (var size in _pageSizes!) {
+            if (size.width > maxPageWidth) maxPageWidth = size.width;
+          }
+          if (maxPageWidth > 0 && maxPageWidth > _viewportSize!.width) {
+            // Add a slight margin so it doesn't touch edges tightly
+            final double targetZoom =
+                (_viewportSize!.width - 32) / maxPageWidth;
+            // Syncfusion limits min zoom, so we just set it as low as we want and it caps itself
+            _pdfController.zoomLevel = targetZoom;
+          }
+        }
       });
     } catch (e) {
       debugPrint("Error loading PDF metadata: $e");
@@ -99,10 +117,22 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   // Common default is around 8-10 pixels.
   final double _pageSpacing = 8.0;
 
+  double get _internalScale {
+    if (_viewportSize == null || _pageSizes == null || _pageSizes!.isEmpty) {
+      return 1.0;
+    }
+    double maxPageWidth = 0;
+    for (var size in _pageSizes!) {
+      if (size.width > maxPageWidth) maxPageWidth = size.width;
+    }
+    if (maxPageWidth == 0) return 1.0;
+    return _viewportSize!.width / maxPageWidth;
+  }
+
   Rect _getScreenRect(SignatureBoxModel model) {
     if (_pageSizes == null || _isDocumentLoaded == false) return Rect.zero;
 
-    final zoom = _pdfController.zoomLevel;
+    final zoom = _pdfController.zoomLevel * _internalScale;
     final scroll = _pdfController.scrollOffset;
 
     // Calculate Vertical Offset of the Page
@@ -142,7 +172,8 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   void _addSignatureBox() {
     if (!_isDocumentLoaded || _pageSizes == null) return;
 
-    final int pageIndex = _currentPageIndex;
+    final int pageNum = _pdfController.pageNumber;
+    final int pageIndex = pageNum > 0 ? pageNum - 1 : 0;
 
     if (pageIndex < 0 || pageIndex >= _pageSizes!.length) return;
 
@@ -285,41 +316,59 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     }
   }
 
-  void _updateModelFromScreenRect(SignatureBoxModel model, Rect screenRect) {
-    if (_pageSizes == null) return;
+  void _handleSignatureDrag(SignatureBoxModel model, Offset globalDelta) {
+    if (_pageSizes == null || _pageSizes!.isEmpty) return;
 
-    final zoom = _pdfController.zoomLevel;
-    final scroll = _pdfController.scrollOffset;
+    final zoom = _pdfController.zoomLevel * _internalScale;
 
-    double pageTop = 0;
-    for (int i = 0; i < model.pageIndex; i++) {
-      pageTop += (_pageSizes![i].height * zoom) + _pageSpacing;
-    }
+    // Convert the screen-drag delta map directly into PDF Point delta.
+    final double deltaX = globalDelta.dx / zoom;
+    final double deltaY = globalDelta.dy / zoom;
 
-    // Calculate Horizontal Centering Margin
-    double marginLeft = 0;
-    if (_viewportSize != null) {
-      final pageWidthScaled = _pageSizes![model.pageIndex].width * zoom;
-      if (pageWidthScaled < _viewportSize!.width) {
-        marginLeft = (_viewportSize!.width - pageWidthScaled) / 2;
+    setState(() {
+      model.pdfRect = Rect.fromLTWH(
+        model.pdfRect.left + deltaX,
+        model.pdfRect.top + deltaY,
+        model.pdfRect.width,
+        model.pdfRect.height,
+      );
+
+      // Now, casually check if it crossed a page boundary by seeing if Y exceeded
+      // current page limits.
+      // (This handles moving DOWN)
+      final currentPageHeight = _pageSizes![model.pageIndex].height;
+      if (model.pdfRect.top > currentPageHeight) {
+        if (model.pageIndex < _pageSizes!.length - 1) {
+          model.pageIndex++;
+          // Shift the rect Y into the new page's coordinate space
+          model.pdfRect = Rect.fromLTWH(
+            model.pdfRect.left,
+            model.pdfRect.top - currentPageHeight,
+            model.pdfRect.width,
+            model.pdfRect.height,
+          );
+        }
       }
-    }
+      // (This handles moving UP)
+      else if (model.pdfRect.top < 0) {
+        if (model.pageIndex > 0) {
+          model.pageIndex--;
+          final previousPageHeight = _pageSizes![model.pageIndex].height;
+          // Shift the rect Y back into the previous page's bottom bounds
+          model.pdfRect = Rect.fromLTWH(
+            model.pdfRect.left,
+            previousPageHeight + model.pdfRect.top, // top is negative here
+            model.pdfRect.width,
+            model.pdfRect.height,
+          );
+        }
+      }
+    });
 
-    final double pdfX = (screenRect.left + scroll.dx - marginLeft) / zoom;
-    final double pdfY = (screenRect.top + scroll.dy - pageTop) / zoom;
-    final double pdfW = screenRect.width / zoom;
-    final double pdfH = screenRect.height / zoom;
-
-    debugPrint("--- Coord Debug ---");
-    debugPrint("ScreenRect: $screenRect");
-    debugPrint("Scroll: $scroll, Zoom: $zoom");
-    debugPrint("Viewport: $_viewportSize");
-    debugPrint("PageSize(PDF): ${_pageSizes![model.pageIndex]}");
-    debugPrint("PageTop: $pageTop, MarginLeft: $marginLeft");
-    debugPrint("Calculated PDF: X=$pdfX, Y=$pdfY");
-    debugPrint("-------------------");
-
-    model.pdfRect = Rect.fromLTWH(pdfX, pdfY, pdfW, pdfH);
+    // Debug tracking
+    debugPrint(
+      "Moved Sig to P${model.pageIndex} : PDF[${model.pdfRect.left}, ${model.pdfRect.top}]",
+    );
   }
 
   void _saveDocument() async {
@@ -396,13 +445,28 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(path.basename(widget.file.path)),
+        title: Text(
+          path.basename(widget.file.path),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+        ),
         actions: [
-          const WacomConnectButton(),
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveDocument,
-            tooltip: "Save Document",
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: WacomConnectButton(),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: FilledButton.icon(
+              onPressed: _saveDocument,
+              icon: const Icon(Icons.save_rounded, size: 20),
+              label: const Text("Save Document"),
+              style: FilledButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+            ),
           ),
         ],
       ),
@@ -416,9 +480,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           builder: (context, constraints) {
             // Update viewport size
             if (_viewportSize != constraints.biggest) {
-              // Determine if we need to schedule a build or just update state
-              // Since this is inside build, we shouldn't setState immediately if it triggers rebuild
-              // But we need the value for calculating rects.
               _viewportSize = constraints.biggest;
             }
 
@@ -452,7 +513,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                     });
                   },
                   onPageChanged: (details) {
-                    _currentPageIndex = details.newPageNumber - 1;
+                    setState(() {});
                   },
                   onZoomLevelChanged: (details) {
                     setState(() {});
@@ -466,8 +527,8 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                     return SignatureBoxOverlay(
                       rect: rect,
                       signatureImage: model.image,
-                      onUpdate: (newRect) {
-                        _updateModelFromScreenRect(model, newRect);
+                      onUpdate: (delta) {
+                        _handleSignatureDrag(model, delta);
                       },
                       onConfirm: () => _showSignatureOptions(model),
                       onDelete: () {
@@ -480,12 +541,21 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 
                 // Floating Action Button to add signature
                 Positioned(
-                  bottom: 20,
-                  right: 20,
+                  bottom: 32,
+                  right: 32,
                   child: FloatingActionButton.extended(
                     onPressed: _addSignatureBox,
-                    label: const Text("Add Signature"),
-                    icon: const Icon(Icons.add),
+                    elevation: 4,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    label: const Text(
+                      "Add Signature Box",
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    icon: const Icon(Icons.add_box_rounded),
                   ),
                 ),
               ],

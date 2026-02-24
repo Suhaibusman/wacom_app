@@ -50,23 +50,25 @@ class PdfService {
         final Size pageSize = page.getClientSize();
         debugPrint("PDF Page Size: W=${pageSize.width}, H=${pageSize.height}");
 
-        if (x + width > pageSize.width || y + height > pageSize.height) {
-          debugPrint(
-            "WARNING: Signature might be out of bounds! MaxW=${pageSize.width}, MaxH=${pageSize.height}",
-          );
-        }
-        final double correctedY = pageSize.height - (y + height);
+        // SfPdfViewer and our model natively use a Top-Down Y coordinate system.
+        // The framework already standardizes pagePosition and drawImage coordinates natively.
+        // We do not need a manual inversion here anymore.
+        double finalX = x;
+        double finalY = y;
 
-        page.graphics.drawImage(
-          PdfBitmap(image),
-          Rect.fromLTWH(x, correctedY, width, height),
-        );
+        // Minor bounding safety checks
+        if (finalX < 0) finalX = 0;
+        if (finalY < 0) finalY = 0;
+        if (finalX + width > pageSize.width) finalX = pageSize.width - width;
+        if (finalY + height > pageSize.height) {
+          finalY = pageSize.height - height;
+        }
 
         // Draw the signature image directly using PDF coordinates
-        // page.graphics.drawImage(
-        //   PdfBitmap(image),
-        //   Rect.fromLTWH(x, y, width, height),
-        // );
+        page.graphics.drawImage(
+          PdfBitmap(image),
+          Rect.fromLTWH(finalX, finalY, width, height),
+        );
       }
 
       // Save the document

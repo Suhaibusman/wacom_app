@@ -41,6 +41,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   pdfrx: ^2.2.24
   flutter_riverpod: ^3.2.1
+  google_fonts: ^6.2.1
   file_picker: ^10.3.10
   syncfusion_flutter_pdfviewer: ^32.2.5
   pdf: ^3.11.3

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class SignatureBoxOverlay extends StatefulWidget {
   final Rect rect; // Changed from initialPosition
-  final Function(Rect) onUpdate;
+  final Function(Offset) onUpdate; // Pass Delta instead of absolute Rect
   final VoidCallback onConfirm;
   final VoidCallback onDelete;
   final Uint8List? signatureImage;
@@ -65,42 +65,49 @@ class _SignatureBoxOverlayState extends State<SignatureBoxOverlay> {
         decoration: BoxDecoration(
           color: widget.signatureImage != null
               ? Colors.transparent
-              : Colors.blue.withAlpha(25),
-          border: Border.all(color: Colors.blueAccent, width: 2),
+              : const Color(0xFF4F46E5).withAlpha(25), // AppColors.primary
+          border: Border.all(
+            color: const Color(0xFF4F46E5),
+            width: 2,
+            strokeAlign: BorderSide.strokeAlignCenter,
+          ),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Stack(
-          clipBehavior:
-              Clip.none, // Allow buttons to be slightly outside if needed
+          clipBehavior: Clip.none,
           children: [
             // 1. Drag Handler (Center/Background)
             Positioned.fill(
               child: GestureDetector(
                 onPanUpdate: (details) {
                   _updatePosition(_position + details.delta);
+                  // Commit delta to parent immediately
+                  widget.onUpdate(details.delta);
                 },
                 onPanEnd: (details) {
-                  // Commit final position to parent
-                  widget.onUpdate(
-                    Rect.fromLTWH(
-                      _position.dx,
-                      _position.dy,
-                      _size.width,
-                      _size.height,
-                    ),
-                  );
+                  // Finalizing
                 },
                 onTap: widget.onConfirm, // Setup tap to open dialog
                 child: Container(
-                  color: Colors.transparent, // Capture taps
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                   child: widget.signatureImage != null
-                      ? Image.memory(
-                          widget.signatureImage!,
-                          fit: BoxFit.contain,
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.memory(
+                            widget.signatureImage!,
+                            fit: BoxFit.contain,
+                          ),
                         )
                       : const Center(
                           child: Text(
                             "Tap to Sign",
-                            style: TextStyle(color: Colors.blue),
+                            style: TextStyle(
+                              color: Color(0xFF4F46E5),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                 ),
@@ -109,8 +116,8 @@ class _SignatureBoxOverlayState extends State<SignatureBoxOverlay> {
 
             // 2. Resize Handle (Bottom Right)
             Positioned(
-              right: 0,
-              bottom: 0,
+              right: -12,
+              bottom: -12,
               child: GestureDetector(
                 onPanUpdate: (details) {
                   _updateSize(
@@ -119,30 +126,35 @@ class _SignatureBoxOverlayState extends State<SignatureBoxOverlay> {
                       (_size.height + details.delta.dy).clamp(50.0, 300.0),
                     ),
                   );
+                  // We aren't doing size updates on the model yet for PDF, just UI.
                 },
                 onPanEnd: (details) {
-                  widget.onUpdate(
-                    Rect.fromLTWH(
-                      _position.dx,
-                      _position.dy,
-                      _size.width,
-                      _size.height,
-                    ),
-                  );
+                  // Size update finalization
                 },
                 child: Container(
-                  width: 30, // Larger hit area
-                  height: 30,
-                  decoration: const BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.drag_handle,
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
                     color: Colors.white,
-                    size: 20,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: const Color(0xFFE2E8F0),
+                      width: 1.5,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.open_in_full_rounded,
+                      color: Color(0xFF64748B),
+                      size: 16,
+                    ),
                   ),
                 ),
               ),
@@ -150,40 +162,62 @@ class _SignatureBoxOverlayState extends State<SignatureBoxOverlay> {
 
             // 3. Confirm/Sign Button (Top Right)
             Positioned(
-              right: 0, // Inside the box
-              top: 0,
+              right: -12,
+              top: -12,
               child: GestureDetector(
                 onTap: widget.onConfirm,
                 child: Container(
-                  width: 36, // Explicit larger size
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(8),
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981), // success
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.check_rounded,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
-                  child: const Icon(Icons.check, color: Colors.white, size: 24),
                 ),
               ),
             ),
 
             // 4. Delete Button (Top Left)
             Positioned(
-              left: 0,
-              top: 0,
+              left: -12,
+              top: -12,
               child: GestureDetector(
                 onTap: widget.onDelete,
                 child: Container(
-                  width: 36, // Explicit larger size
-                  height: 36,
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(8),
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEF4444), // error
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Center(
+                    child: Icon(
+                      Icons.close_rounded,
+                      color: Colors.white,
+                      size: 20,
                     ),
                   ),
-                  child: const Icon(Icons.close, color: Colors.white, size: 24),
                 ),
               ),
             ),

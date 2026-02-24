@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wacom_app/core/providers.dart';
 
-
 class WacomConnectButton extends ConsumerWidget {
   const WacomConnectButton({super.key});
 
@@ -16,7 +15,7 @@ class WacomConnectButton extends ConsumerWidget {
           connectionState.isConnected ? Icons.usb : Icons.usb_off,
           color: connectionState.isConnected
               ? Colors.greenAccent
-              : Colors.white,
+              : Colors.black,
         ),
         tooltip: connectionState.isConnected
             ? "Wacom Connected"
