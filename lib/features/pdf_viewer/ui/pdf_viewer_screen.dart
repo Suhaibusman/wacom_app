@@ -450,6 +450,26 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
           style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.zoom_out),
+            tooltip: 'Zoom Out',
+            onPressed: () {
+              setState(() {
+                _pdfController.zoomLevel = (_pdfController.zoomLevel - 0.25)
+                    .clamp(0.5, 3.0);
+              });
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.zoom_in),
+            tooltip: 'Zoom In',
+            onPressed: () {
+              setState(() {
+                _pdfController.zoomLevel = (_pdfController.zoomLevel + 0.25)
+                    .clamp(0.5, 3.0);
+              });
+            },
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
             child: WacomConnectButton(),

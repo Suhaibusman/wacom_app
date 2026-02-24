@@ -20,9 +20,9 @@ void main() async {
   );
 
   windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.maximize();
     await windowManager.show();
     await windowManager.focus();
+    await windowManager.maximize();
   });
 
   runApp(const ProviderScope(child: MyApp()));
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Wacom PDF Signer',
+      title: 'Sindh High Court Signer',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

@@ -79,7 +79,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Signature Hub",
+          "Sindh High Court",
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: const [
@@ -108,24 +108,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       color: AppColors.primaryLight.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.edit_document,
-                      size: 48,
-                      color: AppColors.primary,
+                    child: Image.asset(
+                      'assets/images/hc_logo.png',
+                      height: 64,
+                      width: 64,
+                      fit: BoxFit.contain,
                     ),
                   ),
                   const SizedBox(height: 32),
                   Text(
-                    "Sign Documents,\nInstantly.",
+                    "Digital Document\nSigning System.",
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
                       fontWeight: FontWeight.w800,
                       height: 1.1,
                       letterSpacing: -1,
+                      color: AppColors.primaryDark,
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Connect your Wacom tablet and sign PDFs natively.",
+                    "Securely authorize and sign digital PDFs for the Sindh High Court.",
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: AppColors.textSecondary,
                     ),
