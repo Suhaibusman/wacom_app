@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import '../../../core/providers.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/services/wacom_service.dart';
@@ -23,8 +24,9 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
   final double canvasWidth = 400;
   final double canvasHeight = 200;
 
-  Color _selectedColor = AppColors.signatureInk;
+  Color _selectedColor = const Color(0xFF2563EB);
   bool _isClosing = false; // Prevent multiple pops
+  bool _wacomUiActive = false;
 
   @override
   void initState() {
@@ -40,11 +42,17 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
       await wacomNotifier.connect();
     }
 
+    // Show idle screen immediately after device connects
+    final wacomService = ref.read(wacomServiceProvider);
+    final connectedState = ref.read(wacomConnectionProvider);
+    if (connectedState.isConnected && connectedState.capabilities != null) {
+      _setWacomIdleScreen(connectedState.capabilities!, wacomService);
+    }
+
     // Give device a moment to settle
     await Future.delayed(const Duration(milliseconds: 500));
 
     // Start listening to events from the service
-    final wacomService = ref.read(wacomServiceProvider);
     // Be sure to cancel previous subscription if any
     await _penSubscription?.cancel();
 
@@ -53,7 +61,7 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
     if (currentState.isConnected && currentState.capabilities != null) {
       // Set the Wacom Screen Image (Buttons)
       if (mounted) {
-        _setWacomScreen(currentState.capabilities!, wacomService);
+        _showWacomSignatureScreen(currentState.capabilities!, wacomService);
       }
 
       _penSubscription = wacomService.penEvents.listen((event) {
@@ -76,22 +84,58 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
       Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
     );
 
-    // Draw White Background
+    // Background
     canvas.drawRect(
       Rect.fromLTWH(0, 0, width.toDouble(), height.toDouble()),
-      Paint()..color = Colors.white,
+      Paint()..color = const Color(0xFFF8FAFC),
     );
 
-    // Draw Text/Instructions
+    // Title
     final textPainter = TextPainter(
       text: const TextSpan(
         text: "Sign here",
-        style: TextStyle(color: Colors.black, fontSize: 24),
+        style: TextStyle(
+          color: Color(0xFF0F172A),
+          fontSize: 28,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(canvas, Offset((width - textPainter.width) / 2, 50));
+    textPainter.paint(canvas, Offset((width - textPainter.width) / 2, 36));
+
+    // Signature field
+    final fieldRect = Rect.fromLTWH(
+      width * 0.08,
+      height * 0.22,
+      width * 0.84,
+      height * 0.42,
+    );
+    canvas.drawRect(fieldRect, Paint()..color = Colors.white);
+    canvas.drawRect(
+      fieldRect,
+      Paint()
+        ..color = const Color(0xFFE2E8F0)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3,
+    );
+
+    final hintPainter = TextPainter(
+      text: const TextSpan(
+        text: "Please sign in the box",
+        style: TextStyle(color: Color(0xFF94A3B8), fontSize: 20),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    hintPainter.layout();
+    hintPainter.paint(
+      canvas,
+      Offset(
+        (width - hintPainter.width) / 2,
+        fieldRect.center.dy - (hintPainter.height / 2),
+      ),
+    );
 
     // Draw Buttons at bottom
     final buttonHeight = height * 0.2; // Bottom 20%
@@ -102,21 +146,24 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
     _drawWacomButton(
       canvas,
       "Clear",
-      Colors.redAccent,
+      const Color(0xFFE2E8F0),
+      const Color(0xFF0F172A),
       Rect.fromLTWH(0, buttonTop, buttonWidth, buttonHeight),
     );
     // Cancel Button (Middle)
     _drawWacomButton(
       canvas,
       "Cancel",
-      Colors.grey,
+      const Color(0xFFF1F5F9),
+      const Color(0xFF0F172A),
       Rect.fromLTWH(buttonWidth, buttonTop, buttonWidth, buttonHeight),
     );
     // Apply Button (Right)
     _drawWacomButton(
       canvas,
       "Apply",
-      Colors.green,
+      const Color(0xFF059669),
+      Colors.white,
       Rect.fromLTWH(buttonWidth * 2, buttonTop, buttonWidth, buttonHeight),
     );
 
@@ -147,12 +194,18 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
     }
   }
 
-  void _drawWacomButton(Canvas canvas, String text, Color color, Rect rect) {
+  void _drawWacomButton(
+    Canvas canvas,
+    String text,
+    Color color,
+    Color textColor,
+    Rect rect,
+  ) {
     canvas.drawRect(rect, Paint()..color = color);
     canvas.drawRect(
       rect,
       Paint()
-        ..color = Colors.black
+        ..color = const Color(0xFFCBD5E1)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2,
     );
@@ -160,10 +213,10 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: textColor,
           fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -179,6 +232,9 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
   }
 
   void _handlePenEvent(Map<String, dynamic> event, Map<String, dynamic> caps) {
+    if (!_wacomUiActive) {
+      return; // Ignore pen input when device is in idle/ready state
+    }
     final x = event['x'] as double;
     final y = event['y'] as double;
     final pressure = event['pressure'] as double;
@@ -212,15 +268,9 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
         _clear();
       } else if (mappedX < buttonWidth * 2) {
         debugPrint("Action: Cancel");
-        _isClosing = true;
-        _penSubscription?.cancel(); // Stop listening immediately
-        if (mounted) {
-          Navigator.of(context).pop(); // Cancel
-        }
+        _closeDialog();
       } else {
         debugPrint("Action: Apply");
-        _isClosing = true;
-        _penSubscription?.cancel(); // Stop listening immediately
         _apply();
       }
       return; // Don't draw
@@ -246,14 +296,26 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
   @override
   void dispose() {
     _penSubscription?.cancel();
-    // Explicitly push an "Idle/Ready" screen to the Wacom device so the
-    // "Sign Here" buttons don't stay frozen on the screen.
+    _showWacomIdleScreen();
+    super.dispose();
+  }
+
+  Future<void> _showWacomSignatureScreen(
+    Map<String, dynamic> caps,
+    WacomService service,
+  ) async {
+    _wacomUiActive = true;
+    await _setWacomScreen(caps, service);
+  }
+
+  Future<void> _showWacomIdleScreen() async {
+    if (!_wacomUiActive) return;
     final wacomService = ref.read(wacomServiceProvider);
     final currentState = ref.read(wacomConnectionProvider);
     if (currentState.isConnected && currentState.capabilities != null) {
-      _setWacomIdleScreen(currentState.capabilities!, wacomService);
+      await _setWacomIdleScreen(currentState.capabilities!, wacomService);
     }
-    super.dispose();
+    _wacomUiActive = false;
   }
 
   Future<void> _setWacomIdleScreen(
@@ -280,7 +342,7 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
       text: const TextSpan(
         text: "Sindh High Court",
         style: TextStyle(
-          color: Colors.black,
+          color: Color(0xFF059669),
           fontSize: 32,
           fontWeight: FontWeight.bold,
         ),
@@ -288,14 +350,6 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
       textDirection: TextDirection.ltr,
     );
     textPainter.layout();
-    textPainter.paint(
-      canvas,
-      Offset(
-        (width - textPainter.width) / 2,
-        (height - textPainter.height) / 2 - 20,
-      ),
-    );
-
     final subtextPainter = TextPainter(
       text: const TextSpan(
         text: "Device Ready",
@@ -304,11 +358,48 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
       textDirection: TextDirection.ltr,
     );
     subtextPainter.layout();
+
+    // Draw App Logo (center, text below)
+    double logoBottom = height * 0.4;
+    try {
+      final data = await rootBundle.load('assets/images/hc_logo.png');
+      final codec = await ui.instantiateImageCodec(
+        data.buffer.asUint8List(),
+        targetWidth: (width * 0.22).toInt(),
+      );
+      final frame = await codec.getNextFrame();
+      final image = frame.image;
+      final logoSize = Size(
+        image.width.toDouble(),
+        image.height.toDouble(),
+      );
+      final logoOffset = Offset(
+        (width - logoSize.width) / 2,
+        height * 0.22,
+      );
+      logoBottom = logoOffset.dy + logoSize.height;
+      canvas.drawImage(
+        image,
+        logoOffset,
+        Paint()..color = Colors.white.withValues(alpha: 0.9),
+      );
+    } catch (_) {
+      // Ignore logo load errors for the idle screen
+    }
+
+    textPainter.paint(
+      canvas,
+      Offset(
+        (width - textPainter.width) / 2,
+        logoBottom + 12,
+      ),
+    );
+
     subtextPainter.paint(
       canvas,
       Offset(
         (width - subtextPainter.width) / 2,
-        (height - subtextPainter.height) / 2 + 30,
+        logoBottom + 12 + textPainter.height + 10,
       ),
     );
 
@@ -376,8 +467,18 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
     }
 
     if (mounted) {
-      Navigator.of(context).pop(pngBytes);
+      _closeDialog(pngBytes);
     }
+  }
+
+  Future<void> _closeDialog([Uint8List? result]) async {
+    if (_isClosing) return;
+    _isClosing = true;
+    if (mounted) {
+      Navigator.of(context).pop(result);
+    }
+    unawaited(_penSubscription?.cancel());
+    unawaited(_showWacomIdleScreen());
   }
 
   void _drawStrokes(Canvas canvas) {
@@ -409,107 +510,181 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dialogWidth = screenWidth < 520 ? screenWidth - 32 : 520.0;
+    final bool hasInk = strokes.isNotEmpty || currentStroke.isNotEmpty;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       elevation: 0,
       backgroundColor: AppColors.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              "Sign Here",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "Use your Wacom pen directly on this pad",
-              style: TextStyle(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 24),
-            Container(
-              width: canvasWidth,
-              height: canvasHeight,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.border, width: 2),
-                borderRadius: BorderRadius.circular(12),
-                color: const Color(0xFFF8FAFC), // slightly off white
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: CustomPaint(
-                  painter: _SignaturePainter(
-                    strokes,
-                    currentStroke,
-                    _selectedColor,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: dialogWidth),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 36,
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryLight.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.draw_rounded,
+                      color: AppColors.primaryDark,
+                    ),
                   ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Sign here",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          "Use your Wacom pen to sign in the box",
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: canvasWidth,
+                height: canvasHeight,
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.border, width: 2),
+                  borderRadius: BorderRadius.circular(12),
+                  color: const Color(0xFFFFFFFF),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Stack(
+                  children: [
+                    if (!hasInk)
+                      Center(
+                        child: Text(
+                          "Sign here",
+                          style: TextStyle(
+                            color: AppColors.textSecondary.withValues(alpha: 0.4),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    Positioned.fill(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onPanStart: (details) {
+                            setState(() {
+                              currentStroke = [details.localPosition];
+                            });
+                          },
+                          onPanUpdate: (details) {
+                            setState(() {
+                              currentStroke.add(details.localPosition);
+                            });
+                          },
+                          onPanEnd: (_) {
+                            if (currentStroke.isNotEmpty) {
+                              setState(() {
+                                strokes.add(List.from(currentStroke));
+                                currentStroke.clear();
+                              });
+                            }
+                          },
+                          child: CustomPaint(
+                            painter: _SignaturePainter(
+                              strokes,
+                              currentStroke,
+                              _selectedColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _colorOption(const Color(0xFF0F172A)), // Ink Black
-                const SizedBox(width: 16),
-                _colorOption(const Color(0xFF2563EB)), // Deep Blue
-                const SizedBox(width: 16),
-                _colorOption(const Color(0xFFDC2626)), // Red
-              ],
-            ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _saveSignature,
-                      activeColor: AppColors.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      onChanged: (v) =>
-                          setState(() => _saveSignature = v ?? false),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Checkbox(
+                    value: _saveSignature,
+                    activeColor: AppColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    const Text(
-                      "Save Signature",
-                      style: TextStyle(fontWeight: FontWeight.w500),
+                    onChanged: (v) =>
+                        setState(() => _saveSignature = v ?? false),
+                  ),
+                  const Text(
+                    "Save Signature",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                  const Spacer(),
+                  _colorOption(const Color(0xFF0F172A)),
+                  const SizedBox(width: 10),
+                  _colorOption(const Color(0xFF2563EB)),
+                  const SizedBox(width: 10),
+                  _colorOption(const Color(0xFFDC2626)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  TextButton(
+                    onPressed: _clear,
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.textSecondary,
                     ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    TextButton(
-                      onPressed: _clear,
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                      ),
-                      child: const Text("Clear"),
+                    child: const Text("Clear"),
+                  ),
+                  const Spacer(),
+                  OutlinedButton(
+                    onPressed: _closeDialog,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textSecondary,
+                      side: const BorderSide(color: AppColors.border),
                     ),
-                    const SizedBox(width: 8),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                      ),
-                      child: const Text("Cancel"),
+                    child: const Text("Cancel"),
+                  ),
+                  const SizedBox(width: 10),
+                  FilledButton(
+                    onPressed: _apply,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
                     ),
-                    const SizedBox(width: 12),
-                    FilledButton(
-                      onPressed: _apply,
-                      child: const Text("Confirm"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                    child: const Text("Apply"),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -528,19 +528,23 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                     final pagePos = details.pagePosition;
                     final int pageIndex = details.pageNumber - 1; // 0-based
 
+                    final model = SignatureBoxModel(
+                      id: const Uuid().v4(),
+                      pdfRect: Rect.fromLTWH(
+                        pagePos.dx,
+                        pagePos.dy,
+                        200,
+                        100,
+                      ),
+                      pageIndex: pageIndex,
+                    );
                     setState(() {
-                      _signatures.add(
-                        SignatureBoxModel(
-                          id: const Uuid().v4(),
-                          pdfRect: Rect.fromLTWH(
-                            pagePos.dx,
-                            pagePos.dy,
-                            200,
-                            100,
-                          ),
-                          pageIndex: pageIndex,
-                        ),
-                      );
+                      _signatures.add(model);
+                    });
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        _openSignatureDialog(model);
+                      }
                     });
                   },
                   onPageChanged: (details) {
@@ -641,21 +645,25 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                             final double pdfW = screenRect.width / zoom;
                             final double pdfH = screenRect.height / zoom;
 
+                            final model = SignatureBoxModel(
+                              id: const Uuid().v4(),
+                              pdfRect: Rect.fromLTWH(
+                                pdfX,
+                                pdfY,
+                                pdfW,
+                                pdfH,
+                              ),
+                              pageIndex: _dragPageIndex!,
+                            );
                             setState(() {
-                              _signatures.add(
-                                SignatureBoxModel(
-                                  id: const Uuid().v4(),
-                                  pdfRect: Rect.fromLTWH(
-                                    pdfX,
-                                    pdfY,
-                                    pdfW,
-                                    pdfH,
-                                  ),
-                                  pageIndex: _dragPageIndex!,
-                                ),
-                              );
+                              _signatures.add(model);
                               // Exit drawing mode automatically after successful draw
                               _toggleDrawingMode();
+                            });
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted) {
+                                _openSignatureDialog(model);
+                              }
                             });
                           } else {
                             // Box too small, just cancel and let them try again
