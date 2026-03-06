@@ -87,7 +87,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Sindh High Court",
+          "FlutterWacom",
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: const [
@@ -135,7 +135,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Securely authorize and sign digital PDFs for the Sindh High Court.",
+                    "Securely authorize and sign digital PDFs for the FlutterWacom.",
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       color: AppColors.textSecondary,
                     ),

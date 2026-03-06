@@ -340,7 +340,7 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
     // Draw Text/Instructions
     final textPainter = TextPainter(
       text: const TextSpan(
-        text: "Sindh High Court",
+        text: "FlutterWacom",
         style: TextStyle(
           color: Color(0xFF059669),
           fontSize: 32,
@@ -369,14 +369,8 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
       );
       final frame = await codec.getNextFrame();
       final image = frame.image;
-      final logoSize = Size(
-        image.width.toDouble(),
-        image.height.toDouble(),
-      );
-      final logoOffset = Offset(
-        (width - logoSize.width) / 2,
-        height * 0.22,
-      );
+      final logoSize = Size(image.width.toDouble(), image.height.toDouble());
+      final logoOffset = Offset((width - logoSize.width) / 2, height * 0.22);
       logoBottom = logoOffset.dy + logoSize.height;
       canvas.drawImage(
         image,
@@ -389,10 +383,7 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
 
     textPainter.paint(
       canvas,
-      Offset(
-        (width - textPainter.width) / 2,
-        logoBottom + 12,
-      ),
+      Offset((width - textPainter.width) / 2, logoBottom + 12),
     );
 
     subtextPainter.paint(
@@ -587,7 +578,9 @@ class _SignatureDialogState extends ConsumerState<SignatureDialog> {
                         child: Text(
                           "Sign here",
                           style: TextStyle(
-                            color: AppColors.textSecondary.withValues(alpha: 0.4),
+                            color: AppColors.textSecondary.withValues(
+                              alpha: 0.4,
+                            ),
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           ),
