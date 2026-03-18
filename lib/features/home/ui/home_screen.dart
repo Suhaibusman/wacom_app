@@ -32,15 +32,117 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _openPdf() async {
+    final source = await _showPdfSourcePicker();
+    if (!mounted || source == null) return;
+
+    if (source == _PdfSource.local) {
+      await _openPdfFromLocal();
+      return;
+    }
+
+    await _openPdfFromUrl();
+  }
+
+  Future<void> _openPdfFromLocal() async {
     final fileService = ref.read(fileServiceProvider);
     final file = await fileService.pickPdfFile();
     if (file != null) {
+      _openPdfFile(file);
+    }
+  }
+
+  Future<void> _openPdfFromUrl() async {
+    final controller = TextEditingController();
+    final url = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text("Open PDF from URL"),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: "PDF URL",
+              hintText: "https://example.com/document.pdf",
+            ),
+            keyboardType: TextInputType.url,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (value) {
+              Navigator.pop(dialogContext, value.trim());
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text("Cancel"),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, controller.text.trim());
+              },
+              child: const Text("Open"),
+            ),
+          ],
+        );
+      },
+    );
+
+    controller.dispose();
+
+    if (!mounted || url == null || url.isEmpty) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(const SnackBar(content: Text("Downloading PDF...")));
+
+    try {
+      final fileService = ref.read(fileServiceProvider);
+      final file = await fileService.downloadPdfFromUrl(url);
+
       if (!mounted) return;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => PdfViewerScreen(file: file)),
+      messenger.hideCurrentSnackBar();
+      _openPdfFile(file);
+    } catch (error) {
+      if (!mounted) return;
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        SnackBar(content: Text("Unable to open URL: $error")),
       );
     }
+  }
+
+  Future<_PdfSource?> _showPdfSourcePicker() {
+    return showModalBottomSheet<_PdfSource>(
+      context: context,
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.computer_rounded),
+                title: const Text("Pick from device"),
+                subtitle: const Text("Select a PDF from local storage"),
+                onTap: () => Navigator.pop(context, _PdfSource.local),
+              ),
+              ListTile(
+                leading: const Icon(Icons.link_rounded),
+                title: const Text("Open from URL"),
+                subtitle: const Text("Download and open a PDF from network"),
+                onTap: () => Navigator.pop(context, _PdfSource.network),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _openPdfFile(File file) {
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PdfViewerScreen(file: file)),
+    );
   }
 
   void _openRecentFile(String path) {
@@ -315,3 +417,5 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 }
+
+enum _PdfSource { local, network }

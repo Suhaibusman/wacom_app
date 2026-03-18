@@ -164,14 +164,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
     final double screenW = model.pdfRect.width * zoom;
     final double screenH = model.pdfRect.height * zoom;
 
-    // Debugging scroll tracking
-    if (model.pageIndex > 0) {
-      // Log mainly for subsequent pages to reduce spam
-      debugPrint(
-        "Render Sig: P${model.pageIndex} | PageTop:$pageTop | Scroll:${scroll.dy} | ScreenY:$screenY | Rect:$screenX,$screenY",
-      );
-    }
-
     return Rect.fromLTWH(screenX, screenY, screenW, screenH);
   }
 
@@ -326,11 +318,6 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
         }
       }
     });
-
-    // Debug tracking
-    debugPrint(
-      "Moved Sig to P${model.pageIndex} : PDF[${model.pdfRect.left}, ${model.pdfRect.top}]",
-    );
   }
 
   void _saveDocument() async {
@@ -451,24 +438,20 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
                   visualDensity: VisualDensity.compact,
                   onPressed: () {
                     setState(() {
-                      _pdfController.zoomLevel = (_pdfController.zoomLevel - 0.25)
-                          .clamp(0.5, 3.0);
+                      _pdfController.zoomLevel =
+                          (_pdfController.zoomLevel - 0.25).clamp(0.5, 3.0);
                     });
                   },
                 ),
-                Container(
-                  width: 1,
-                  height: 22,
-                  color: AppColors.border,
-                ),
+                Container(width: 1, height: 22, color: AppColors.border),
                 IconButton(
                   icon: const Icon(Icons.zoom_in, size: 20),
                   tooltip: 'Zoom In',
                   visualDensity: VisualDensity.compact,
                   onPressed: () {
                     setState(() {
-                      _pdfController.zoomLevel = (_pdfController.zoomLevel + 0.25)
-                          .clamp(0.5, 3.0);
+                      _pdfController.zoomLevel =
+                          (_pdfController.zoomLevel + 0.25).clamp(0.5, 3.0);
                     });
                   },
                 ),
@@ -530,12 +513,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 
                     final model = SignatureBoxModel(
                       id: const Uuid().v4(),
-                      pdfRect: Rect.fromLTWH(
-                        pagePos.dx,
-                        pagePos.dy,
-                        200,
-                        100,
-                      ),
+                      pdfRect: Rect.fromLTWH(pagePos.dx, pagePos.dy, 200, 100),
                       pageIndex: pageIndex,
                     );
                     setState(() {
@@ -647,12 +625,7 @@ class _PdfViewerScreenState extends ConsumerState<PdfViewerScreen> {
 
                             final model = SignatureBoxModel(
                               id: const Uuid().v4(),
-                              pdfRect: Rect.fromLTWH(
-                                pdfX,
-                                pdfY,
-                                pdfW,
-                                pdfH,
-                              ),
+                              pdfRect: Rect.fromLTWH(pdfX, pdfY, pdfW, pdfH),
                               pageIndex: _dragPageIndex!,
                             );
                             setState(() {
